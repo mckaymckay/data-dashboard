@@ -160,7 +160,6 @@ export default {
   border-radius: 4px;
   background-color: white;
   margin-bottom: 10px;
-  margin-top: 60px;
   height: 90px;
 }
 .h3 {

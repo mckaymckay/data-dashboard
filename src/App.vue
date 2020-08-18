@@ -51,6 +51,7 @@
         <el-menu-item index="/measure"></el-menu-item>
         <el-menu-item index="/job"></el-menu-item>
       </el-menu> -->
+      <div class="header"></div>
       <router-view />
     </div>
   </div>
@@ -102,9 +103,12 @@ body {
 }
 .main {
   flex: 1 1 auto;
+  min-width: 0;
+  // display: flex;
+}
+.header{
   height: 60px;
   background-color: #041528;
-  // display: flex;
 }
 .logo{
   height: 60px;
