@@ -1,52 +1,64 @@
 <template>
   <div id="app">
     <div class="nav">
+
+      <!-- logo -->
       <div class="logo">
         logo
       </div>
+      <!-- 侧栏 -->
       <el-menu
         default-active="2"
         class="el-menu-vertical-demo"
-        @open="handleOpen"
-        @close="handleClose"
-        background-color="#545c64"
+        background-color="#041528"
         text-color="#fff"
         active-text-color="#ffd04b"
+        :router="true"
       >
-        <el-menu-item index="2">
+        <el-menu-item index="/">
+        <i class="el-icon-data-analysis"></i>
+          <span slot="title">总体大盘</span>
+        </el-menu-item>
+        <el-menu-item index="/Assets">
           <i class="el-icon-menu"></i>
-          <span slot="title">导航二</span>
+          <span slot="title">数据实体</span>
         </el-menu-item>
-        <el-menu-item index="3" disabled>
-          <i class="el-icon-document"></i>
-          <span slot="title">导航三</span>
+        <el-menu-item index="Accuracy">
+          <i class="el-icon-s-marketing"></i>
+          <span slot="title">波动检测</span>
         </el-menu-item>
-        <el-menu-item index="4">
-          <i class="el-icon-setting"></i>
-          <span slot="title">导航四</span>
+        <el-menu-item index="/Job" @click="getJob">
+        <i class="el-icon-edit"></i>
+          <span slot="title" >检测任务</span>
+        </el-menu-item>
+        <el-menu-item index="/Assessment">
+        <i class="el-icon-finished"></i>
+          <span slot="title">质量评估</span>
         </el-menu-item>
       </el-menu>
     </div>
     <div class="main">
-      <el-menu
+      <!-- <el-menu
         :default-active="activeIndex"
         mode="horizontal"
         :router="true"
         @select="handleSelect"
-        background-color="#545c64"
+        background-color="#041528"
         text-color="#fff"
-        active-text-color="#ffd04b"
+        active-text-color="#"
       >
-        <el-menu-item index="/">总体大盘</el-menu-item>
-        <el-menu-item index="/measure">Measure</el-menu-item>
-        <el-menu-item index="/job">Job</el-menu-item>
-      </el-menu>
+        <el-menu-item index="/"></el-menu-item>
+        <el-menu-item index="/measure"></el-menu-item>
+        <el-menu-item index="/job"></el-menu-item>
+      </el-menu> -->
       <router-view />
     </div>
   </div>
 </template>
-
 <script>
+import axios from 'axios'
+// import Job from '../views/job'
+
 export default {
   data () {
     return {
@@ -54,11 +66,13 @@ export default {
     }
   },
   methods: {
-    handleSelect (key, keyPath) {
-      console.log(key, keyPath)
-    },
-    handleOpen (key, keyPath) {
-      console.log(key, keyPath)
+    getJob () {
+      console.log(11111)
+      axios
+        .get('http://localhost:38080/api/v1/jobs')
+        .then(res => {
+          // console.log(res)
+        })
     },
     handleClose (key, keyPath) {
       console.log(key, keyPath)
@@ -88,6 +102,8 @@ body {
 }
 .main {
   flex: 1 1 auto;
+  height: 60px;
+  background-color: #041528;
   // display: flex;
 }
 .logo{

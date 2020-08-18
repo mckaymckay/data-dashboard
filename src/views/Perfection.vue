@@ -1,8 +1,8 @@
 <template>
-  <div class="measure">
+  <div class="perfection">
     <!-- 页面标识 -->
     <div class="pages">
-      <div class="h3">数据实体/规则定义</div>
+      <div class="h3">数据实体/详情</div>
       <div>
         <span class="span_size">TPAS-ZYRY</span>
       </div>
@@ -15,7 +15,7 @@
           highlight-current-row
           @current-change="handleCurrentChange"
           style="width: 100%"
-          height="480">
+          height="550">
           <el-table-column
             type="index"
             width="50">
@@ -23,32 +23,45 @@
           <el-table-column
             property="date"
             label="字段名"
-            width="250">
+            width="200">
           </el-table-column>
           <el-table-column
             property="name"
-            label="类型"
-            width="250">
+            label="规则定义"
+            width="200">
           </el-table-column>
           <el-table-column
             property="address"
-            label="规则定义">
-            <el-select v-model="address" placeholder="默认无需检测">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-            </el-select>
+            label="问题描述"
+            width="250"
+            >
+          </el-table-column>
+          <el-table-column
+            property="address"
+            label="操作">
+                <el-button
+                @click.native.prevent="deleteRow(scope.$index, tableData)"
+                type="text"
+                size="small">
+                更改
+                </el-button>
           </el-table-column>
         </el-table>
     </div>
     <!-- 操作 -->
+    <!-- <div class="pagination_parent">
+      <div class="pagination">
+        <el-button-group>
+          <el-button type="primary" icon="el-icon-arrow-left">返回</el-button>
+        </el-button-group>
+      </div>
+    </div> -->
+        <!-- 操作 -->
     <div class="pagination_parent">
       <div class="pagination">
         <el-button-group>
-          <el-button type="primary" icon="el-icon-upload">提交</el-button>
+          <el-button type="primary" icon="el-icon-arrow-left" @click="back">返回</el-button>
+          <el-button type="primary" @click="toperfection()">详细  <i class="el-icon-arrow-right"></i></el-button>
         </el-button-group>
       </div>
     </div>
@@ -59,24 +72,24 @@ export default {
   data () {
     return {
       tableData: [{
-        date: 'ID',
-        name: 'string',
-        address: '无需检测'
+        date: 'TPAS-ZYRY',
+        name: '无需检测',
+        address: '有缺失值'
       },
       {
         date: 'Orgnization',
         name: 'string',
-        address: '无需检测'
+        address: '有缺失值'
       },
       {
         date: 'Orgname',
         name: 'string',
-        address: '无需检测'
+        address: '有缺失值  '
       },
       {
-        date: 'UserID',
+        date: 'JB',
         name: 'string',
-        address: '无需检测'
+        address: '有缺失值'
       }],
       options: [{
         value: '选项1',
@@ -109,7 +122,7 @@ export default {
 }
 </script>
 <style scoped>
-.measure {
+.perfection {
   padding: 10px;
 }
 .pages {
@@ -117,7 +130,6 @@ export default {
   border-radius: 4px;
   background-color: white;
   margin-bottom: 10px;
-  margin-top: 60px;
   height: 90px;
 }
 .h3 {
@@ -137,7 +149,7 @@ export default {
 .pagination {
   padding: 5px;
   border-radius: 4px;
-  width: 90px;
+  width: 305px;
   margin: 5px auto;
 }
 </style>
