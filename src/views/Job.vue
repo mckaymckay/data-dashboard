@@ -22,32 +22,44 @@
         @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55">
             </el-table-column>
-            <el-table-column label="任务名称" width="200">
+            <el-table-column  label="任务名称" width="200">
               <template slot-scope="scope">
-                <el-button  type="text" @click="tosuccessJob(scope.row.id)">{{ scope.row["job.name"] }}</el-button>
+                <el-button  type="text" @click="tosuccessJob(scope.row.JS_ID)">{{ scope.row["JS_JOBNAME"] }}</el-button>
+              </template>
+            </el-table-column>
+             <el-table-column label="表名" width="150">
+              <template slot-scope="scope">
+                <el-button  type="text">{{scope.row.JS_TABLENAME}}</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column label="字段名称" width="150">
+              <template slot-scope="scope">
+                <el-button  type="text">{{scope.row.JS_TABLEFIELD}}</el-button>
               </template>
             </el-table-column>
             <el-table-column prop="time" label="上次执行时间" width="200">
               <template slot-scope="scope">
-                {{ dayjs(scope.row["job.state"].previousFireTime).format('YYYY-MM-DD HH:mm:ss')}}
+                {{ scope.row["JS_LASTEXECUTIONTIME"]}}
               </template>
             </el-table-column>
             <el-table-column prop="time" label="下次执行时间" width="200">
               <template slot-scope="scope">
-                {{ dayjs(scope.row["job.state"].nextFireTime).format('YYYY-MM-DD HH:mm:ss')}}
+                {{ scope.row["JS_NEXTEXECUTIONTIME"]}}
               </template>
             </el-table-column>
             <el-table-column prop="status" label="状态" width="150">
               <template slot-scope="scope">
-                <el-button v-if="scope.row['job.state'].state=='PAUSED'" type="danger" plain="">{{ scope.row["job.state"].state }}</el-button>
-                <el-button v-else-if="scope.row['job.state'].state=='NORMAL'" type="success" plain="">{{ scope.row["job.state"].state }}</el-button>
+                <el-button v-if="scope.row['JS_STATUS']==='暂停'" type="danger" plain="">暂停</el-button>
+                <el-button v-else-if="scope.row['JS_STATUS']==='执行'" type="success" plain="">执行</el-button>
+                 <!-- <el-button type="danger" plain="">暂停</el-button> -->
               </template>
             </el-table-column>
             <el-table-column label="操作" width="200">
-              <el-button-group>
+              <el-button-group slot-scope="scope" >
                 <el-button type="primary" icon="el-icon-view"></el-button>
                 <el-button type="primary" icon="el-icon-delete"></el-button>
-                <el-button type="primary" icon="el-icon-video-pause"></el-button>
+                <el-button v-if="scope.row['JS_STATUS']==='执行'" type="primary" @click="redefine(scope.row.JS_ID)" icon="el-icon-video-pause"></el-button>
+                <el-button v-else-if="scope.row['JS_STATUS']==='暂停'" type="primary" @click="redefine(scope.row.JS_ID)" icon="el-icon-video-play"></el-button>
               </el-button-group>
             </el-table-column>
             <el-table-column label="结果">
@@ -59,9 +71,11 @@
     <div class="pagination_parent">
       <div class="pagination">
       <el-pagination
+      @current-change="handleCurrentChange"
+      :total="total"
+      :current-page="page"
         background
-        layout="prev, pager, next"
-        :total="1000">
+        layout="prev, pager, next">
       </el-pagination>
       </div>
     </div>
@@ -71,18 +85,16 @@
 import axios from 'axios'
 import dayjs from 'dayjs'
 export default {
-  props: {},
-
-  components: {},
-
-  mixins: [],
 
   data () {
     return {
       input1: '',
       select: '',
       selected: [],
-      tableData: []
+      tableData: [],
+      page: 1,
+      total: 0,
+      limit: 10
     }
   },
 
@@ -93,22 +105,33 @@ export default {
   created () {},
 
   mounted () {
-    axios
-      .get('http://localhost:38080/api/v1/jobs')
-      .then(res => {
-        console.log('zheshi job')
-        console.log(res.data)
-        this.tableData = res.data
-      })
+    this.handleCurrentChange(1)
   },
 
   methods: {
     dayjs (e) {
       return dayjs(e)
     },
+    // 分页
+    handleCurrentChange (val) {
+      // console.log(`当前页: ${val}`)
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/jobs?page=' + val + '&size=10')
+        .then(res => {
+          console.log(res)
+          this.tableData = res.data.data
+          this.total = res.data.pages * this.limit
+        })
+    },
     tosuccessJob (jobid) {
       // console.log(jobid)
       this.$router.push({ path: '/successjob/' + jobid })
+    },
+    redefine (jobid) {
+      this.$alert('修改任务状态', '结果', {
+        confirmButtonText: '确定'
+        // callback: () => this.$router.push({ path: '/accuracy/' })
+      })
     },
     handleSelectionChange (rows) {
       this.multipleSelection = rows
@@ -132,7 +155,6 @@ export default {
   padding: 10px;
   border-radius: 4px;
   background-color: white;
-  margin-top: 60px;
   margin-bottom: 10px;
   height: 90px;
 }

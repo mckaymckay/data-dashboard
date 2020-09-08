@@ -20,51 +20,54 @@
       <!-- 数据表 -->
         <el-table-column label="数据表" width="200">
           <template slot-scope="scope">
-            <span style="margin-left: 10px">{{ scope.row.table }}</span>
+            <span style="margin-left: 10px">{{ scope.row.TM_TABLENAME }}</span>
           </template>
         </el-table-column>
       <!-- 数据库 -->
         <el-table-column label="字段" width="200">
           <template slot-scope="scope">
-            <span style="margin-left: 10px">{{ scope.row.fields }}</span>
+            <span style="margin-left: 10px">{{ scope.row.FM_TABLEFIELD }}</span>
           </template>
         </el-table-column>
       <!-- 创建时间 -->
         <el-table-column label="问题描述" width="300">
           <template slot-scope="scope">
-            <span style="margin-left: 10px">{{ scope.row.question }}</span>
+            <span style="margin-left: 10px">{{ scope.row.PS_PROBLEM }}</span>
           </template>
         </el-table-column>
       <!-- 更新时间 -->
-        <el-table-column label="更改建议" width="300">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px">{{ scope.row.modify }}</span>
+        <el-table-column label="操作" width="300">
+          <template slot-scope="">
+            <span style="margin-left: 10px;color:#409EFF" @click="tofill">更改</span>
           </template>
         </el-table-column>
         <!-- 操作  -->
-        <el-table-column label="操作">
+        <!-- <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button
               size="mini"
               type="text"
               @click="handleDelete(scope.$index, scope.row)">更改</el-button>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
     </div>
     <!-- 分页 -->
     <div class="pagination_parent">
       <div class="pagination">
       <el-pagination
+      @current-change="handleCurrentChange"
+        :total="total"
+        :current-page="page"
         background
-        layout="prev, pager, next"
-        :total="1000">
+        layout="prev, pager, next">
       </el-pagination>
       </div>
     </div>
   </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
   props: {},
 
@@ -76,32 +79,10 @@ export default {
     return {
       input1: '',
       select: '',
-      tableData: [
-        {
-          table: 'TPAS_ZYRY',
-          fields: 'Orgnazition',
-          question: '含有空值',
-          modify: '填充'
-        },
-        {
-          table: 'TPAS_ZYRY',
-          fields: 'Orgnazition',
-          question: '含有空值',
-          modify: '填充'
-        },
-        {
-          table: 'TPAS_ZYRY',
-          fields: 'Orgnazition',
-          question: '含有空值',
-          modify: '填充'
-        },
-        {
-          table: 'TPAS_ZYRY',
-          fields: 'Orgnazition',
-          question: '含有空值',
-          modify: '填充'
-        }
-      ]
+      tableData: [],
+      page: 1,
+      total: 0,
+      limit: 10
     }
   },
 
@@ -111,7 +92,9 @@ export default {
 
   created () {},
 
-  mounted () {},
+  mounted () {
+    this.handleCurrentChange(1)
+  },
 
   methods: {
     handleEdit (index, row) {
@@ -119,6 +102,21 @@ export default {
     },
     handleDelete (index, row) {
       console.log(index, row)
+    },
+    tofill () {
+      this.$router.push({ path: '/fill/' })
+    },
+    // 分页
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/problemlist?page=' + val + '&size=10')
+        .then(res => {
+          console.log('zheshi assessment')
+          console.log(res)
+          this.tableData = res.data.data
+          this.total = res.data.counts
+        })
     }
   }
 }
@@ -131,7 +129,6 @@ export default {
   padding: 10px;
   border-radius: 4px;
   background-color: white;
-  margin-top: 60px;
   margin-bottom: 10px;
   height: 90px;
 }

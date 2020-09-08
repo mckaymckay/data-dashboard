@@ -61,6 +61,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.$route.params)
     var jobId = this.$route.params.jobId
     console.log(this.$route.params.jobId)
     axios

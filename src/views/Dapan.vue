@@ -5,20 +5,48 @@
         <div class="flex-1">
           <div class="table-title">表量top10</div>
           <el-table :data="tableData1" stripe>
-            <el-table-column prop="name" label="表名"></el-table-column>
-            <el-table-column prop="content" label="大小"></el-table-column>
+            <el-table-column label="表名">
+              <template slot-scope="scope">
+                <span style="margin-left: 10px">{{ scope.row.TM_TABLENAME }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="大小" width="65px">
+              <template slot-scope="scope">
+                <span style="margin-left: 10px">{{ scope.row.TM_HISTORYSIZE }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="条数" width="65px">
+              <template slot-scope="scope">
+                <span style="margin-left: 10px">{{ scope.row.TM_HISTORYSIZE }}</span>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
-        <div class="flex-1 flex column data-table_info">
-          <div class="title flex-1">数据表信息</div>
-          <div class="flex-1">数据表总数:110</div>
+        <div class="flex-2 flex column data-table_info">
+          <div class="title flex-2" style="color:#303133">数据表信息</div>
+          <div class="flex-2" style="color:#409EFF">数据表总数:
+            <span>{{tablenumber}}</span>
+          </div>
           <img :src="ajpg" alt />
         </div>
         <div class="flex-1">
           <div class="table-title">表量top10</div>
-          <el-table :data="tableData1" stripe>
-            <el-table-column prop="name" label="表名"></el-table-column>
-            <el-table-column prop="content" label="大小"></el-table-column>
+          <el-table :data="tableData2" stripe>
+            <el-table-column label="表名">
+              <template slot-scope="scope">
+                <span style="margin-left: 10px">{{ scope.row.TM_TABLENAME }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="大小" width="65px">
+              <template slot-scope="scope">
+                <span style="margin-left: 10px">{{ scope.row.TM_HISTORYSIZE }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="条数" width="65px">
+              <template slot-scope="scope">
+                <span style="margin-left: 10px">{{ scope.row.TM_HISTORYSIZE }}</span>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
       </div>
@@ -31,7 +59,7 @@
     </div>
     <div class="body flex container">
       <div class="flex-0 data-task">
-        <div class="title">数据任务</div>
+        <div class="title" style="color:#303133">数据任务</div>
         <div class="instance-status_monitor">
           <div class="table-title">实例状态监控</div>
           <el-table :data="tableData2" stripe>
@@ -46,9 +74,21 @@
       <div class="flex-1">
         <div class="table-title">质量检测有问题top10</div>
         <el-table :data="tableData3" stripe>
-          <el-table-column prop="name" label="表名"></el-table-column>
-          <el-table-column prop="field" label="字段"></el-table-column>
-          <el-table-column prop="desc" label="描述"></el-table-column>
+          <el-table-column label="表名">
+              <template slot-scope="scope">
+                <span style="margin-left: 10px">{{ scope.row.TM_TABLENAME }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="字段">
+              <template slot-scope="scope">
+                <span style="margin-left: 10px">{{ scope.row.FM_TABLEFIELD }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="描述">
+              <template slot-scope="scope">
+                <span style="margin-left: 10px">{{ scope.row.PS_PROBLEM }}</span>
+              </template>
+            </el-table-column>
         </el-table>
       </div>
     </div>
@@ -75,103 +115,43 @@
   </div>
 </template>
 <script>
+import axios from 'axios'
 import ajpg from '../assets/a.jpg'
-const tableData1 = [
-  {
-    name: 'TPAS-ZYRY',
-    content: '234.9k'
-  },
-  {
-    name: 'TPAS-ZYRY',
-    content: '234.7k'
-  },
-  {
-    name: 'TPAS-ZYRY',
-    content: '234.5k'
-  },
-  {
-    name: 'TPAS-ZYRY',
-    content: '234.3k'
-  },
-  {
-    name: 'TPAS-ZYRY',
-    content: '234.3k'
-  }
-]
-const tableData2 = [
-  {
-    type: '波动检测',
-    total: 5,
-    success: 5,
-    fail: 0,
-    end: 0
-  },
-  {
-    type: '标准化检测',
-    total: 5,
-    success: 5,
-    fail: 0,
-    end: 0
-  }
-]
-const tableData3 = [
-  {
-    name: 'TPAS-ZYRY',
-    field: 'status',
-    desc: '含有空值'
-  },
-  {
-    name: 'TPAS-ZYRY',
-    field: 'status',
-    desc: '含有空值'
-  },
-  {
-    name: 'TPAS-ZYRY',
-    field: 'status',
-    desc: '含有空值'
-  },
-  {
-    name: 'TPAS-ZYRY',
-    field: 'status',
-    desc: '含有空值'
-  },
-  {
-    name: 'TPAS-ZYRY',
-    field: 'status',
-    desc: '含有空值'
-  }
-]
+const tableData1 = []
+const tableData2 = []
+const tableData3 = []
 export default {
-  props: {},
-
-  components: {},
-
-  mixins: [],
-
   data () {
     return {
       tableData1,
       tableData2,
       tableData3,
       ajpg,
-      dialogVisible: true
+      dialogVisible: false,
+      tablenumber: null
     }
   },
 
-  computed: {},
-
-  watch: {},
-
-  created () {},
-
-  mounted () {},
-
-  methods: {}
+  mounted () {
+    axios.get('http://47.94.199.242:5000/api/v1.0/tablesize').then((res) => {
+      console.log(res.data.data)
+      this.tableData1 = res.data.data
+      this.tableData2 = res.data.data
+    })
+    axios.get(' http://47.94.199.242:5000/api/v1.0/problemlist').then((res) => {
+      console.log(res.data.data)
+      this.tableData3 = res.data.data
+    })
+    axios.get(' http://47.94.199.242:5000/api/v1.0/tablenumber').then((res) => {
+      console.log(res.data.data)
+      this.tablenumber = res.data.data
+    })
+  }
 }
 </script>
 <style scoped lang="scss">
 .dapan {
-  padding: 20px;
+  padding: 10px;
   .flex {
     display: flex;
   }
@@ -181,6 +161,12 @@ export default {
   .flex-1 {
     flex: 1 1 auto;
     min-width: 0;
+    width: 250px;
+  }
+  .flex-2 {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 200px;
   }
   .justify {
     justify-content: center;
@@ -194,18 +180,19 @@ export default {
     padding: 20px;
   }
   .data-table {
-    margin-right: 20px;
+    margin-right: 10px;
   }
   .title {
     font-size: 20px;
     font-weight: bold;
+    line-height: 100px;
   }
   .head {
     margin-bottom: 20px;
   }
   .data-task {
     width: 400px;
-    margin-right: 20px;
+    margin-right: 10px;
   }
   .person-info {
     width: 200px;

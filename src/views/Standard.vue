@@ -1,32 +1,30 @@
 <template>
-  <div class="fill">
+  <div class="standard">
     <!-- 页面标识 -->
     <div class="pages">
-      <div class="h3">数据实体/详情/质量改进</div>
+      <div class="h3">规则定义</div>
       <div>
-        <span class="span_size">空值填充    </span>
+        <span class="span_size">标准化检测    </span>
       </div>
     </div>
     <!-- 表格 -->
     <div class="content">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="300px" class="demo-ruleForm">
-            <el-form-item label="数据表" prop="field">
-              <el-input v-model="ruleForm.field" style="width: 300px" placeholder="Orgnization">
-                <span>TPAS_JSDRBZRXX</span>
-                </el-input>
+            <el-form-item label="选择字段" prop="field">
+              <el-input v-model="ruleForm.field" style="width: 300px" placeholder="Orgnization"></el-input>
             </el-form-item>
-            <el-form-item label="问题字段" prop="question">
-              <el-input v-model="ruleForm.question" style="width: 300px" placeholder="">DRNJ</el-input>
+            <el-form-item label="选择分类" prop="question">
+              <el-input v-model="ruleForm.question" style="width: 300px" placeholder="含有空值"></el-input>
             </el-form-item>
-            <el-form-item label="问题描述" prop="advice">
-              <el-input v-model="ruleForm.advice" style="width: 300px" placeholder="">含有空值</el-input>
+            <el-form-item label="更改建议" prop="advice">
+              <el-input v-model="ruleForm.advice" style="width: 300px" placeholder="[1:国家级；2:省级；3：区级；4:校级]"></el-input>
             </el-form-item>
             <el-form-item label="填充值" prop="fill">
               <el-input v-model="ruleForm.fill" style="width: 300px" placeholder="请输入填充值"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="submitForm('ruleForm')">修改</el-button>
-                <el-button @click="back">返回</el-button>
+                <el-button @click="resetForm('ruleForm')">重置</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -46,9 +44,6 @@ export default {
   data () {
     return {
       ruleForm: {
-        field: 'TPAS_JSDRBZRXX',
-        question: 'DRNJ',
-        advice: '含有空值',
         name: '',
         region: '',
         date1: '',
@@ -70,7 +65,7 @@ export default {
           { required: true, message: '', trigger: 'change' }
         ],
         fill: [
-          { required: true, message: '', trigger: 'change' }
+          { required: true, message: '请输入填充值', trigger: 'change' }
         ]
       }
     }
@@ -78,30 +73,22 @@ export default {
   methods: {
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
-        this.$alert('提交成功', '结果', {
-          confirmButtonText: '确定'
-          // callback: () => this.$router.push({ path: '/accuracy/' })
-        })
-        // if (valid) {
-        //   alert('submit!')
-        // } else {
-        //   console.log('error submit!!')
-        //   return false
-        // }
+        if (valid) {
+          alert('submit!')
+        } else {
+          console.log('error submit!!')
+          return false
+        }
       })
     },
     resetForm (formName) {
       this.$refs[formName].resetFields()
-    },
-    back () {
-      console.log('back')
-      this.$router.push({ path: '/assessment/' })
     }
   }
 }
 </script>
 <style scoped>
-.fill {
+.standard {
   padding: 10px;
 }
 .pages {

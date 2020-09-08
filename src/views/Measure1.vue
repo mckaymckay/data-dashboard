@@ -1,14 +1,14 @@
 <template>
-  <div class="assets">
+  <div class="measure1">
     <!-- 页面标识 -->
     <div class="pages">
-      <div class="h3">数据实体</div>
+      <div class="h3">规则定义</div>
       <div>
         <span class="span_size">数据列表</span>
       </div>
       <div class="search_button">
         <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">{{searchname}}
-          <el-button type="primary" slot="append" icon="el-icon-search" @click="search">搜索</el-button>
+          <el-button slot="append" icon="el-icon-search" @click="search">搜索</el-button>
         </el-input>
       </div>
     </div>
@@ -35,59 +35,26 @@
           </template>
         </el-table-column>
       <!-- 更新时间 -->
-        <!-- <el-table-column label="更新时间" width="200">
+        <el-table-column label="更新时间" width="200">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{scope.row.TM_UPDATETIME}}</span>
-          </template>
-        </el-table-column> -->
-        <!-- 数据量 -->
-        <el-table-column label="数据量" width="150">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px">{{ scope.row.TM_DBNAME }}</span>
-          </template>
-        </el-table-column>
-        <!-- 数据波动 -->
-        <el-table-column label="数据波动" width="150">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px"><el-button type="text">{{ scope.row.TM_DBNAME }}</el-button></span>
           </template>
         </el-table-column>
       <!-- 规则定义情况 -->
         <el-table-column label="规则定义情况" width="200">
           <template slot-scope="scope">
             <!-- <span v-for="item in scope.row" :key="item.TM_ISDEFINED"> -->
-              <span style="margin-left: 10px" v-if="scope.row.TM_ISDEFINED === '1'">
-                <el-button type="text" @click="todetails(scope.row.TM_ID,scope.row.TM_TABLENAME)">已定义</el-button>
-              </span>
-              <span style="margin-left: 10px" v-else-if="scope.row.TM_ISDEFINED === '0'">
-                <el-button type="text" @click="todetails(scope.row.TM_ID,scope.row.TM_TABLENAME)">未定义</el-button>
-                </span>
+              <span style="margin-left: 10px" v-if="scope.row.TM_ISDEFINED === '1'">已定义</span>
+              <span style="margin-left: 10px" v-else-if="scope.row.TM_ISDEFINED === '0'">未定义</span>
             <!-- </span> -->
-          </template>
-          <!-- 检测任务执行情况 -->
-        </el-table-column><el-table-column label="检测任务执行情况" width="150">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px"><el-button type="text">{{ scope.row.TM_DBNAME }}</el-button></span>
-          </template>
-        </el-table-column>
-        <!-- 数据质量情况 -->
-        <el-table-column label="数据质量情况" width="150">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px"><el-button type="text">{{ scope.row.TM_DBNAME }}</el-button></span>
-          </template>
-        </el-table-column>
-        <!-- 数据治理情况 -->
-        <el-table-column label="数据治理情况" width="150">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px"><el-button type="text">{{ scope.row.TM_DBNAME }}</el-button></span>
           </template>
         </el-table-column>
         <!-- 操作  -->
-        <el-table-column label="操作*">
+        <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button size="mini" type="text" @click="todetails(scope.row.TM_ID,scope.row.TM_TABLENAME)">详情</el-button>
-            <!-- <el-button size="mini" type="text" @click="tomeasure(scope.row.TM_ID,scope.row.TM_TABLENAME)">规则定义</el-button>
-            <el-button size="mini" type="text" @click="reset(scope.row.TM_ID)">重置规则</el-button> -->
+            <!-- <el-button size="mini" type="text" @click="todetails(scope.row.TM_ID)">详情</el-button> -->
+            <el-button size="mini" type="text" @click="tomeasure(scope.row.TM_ID,scope.row.TM_TABLENAME)">规则定义</el-button>
+            <el-button size="mini" type="text" @click="reset(scope.row.TM_ID)">重置规则</el-button>
             <el-dialog
               title="提示"
               :visible.sync="dialogVisible"
@@ -105,8 +72,7 @@
     <!-- 分页 @current-change='changePage' -->
     <div class="pagination_parent">
       <div class="pagination">
-      <el-pagination
-      @current-change="handleCurrentChange"
+      <el-pagination @current-change="handleCurrentChange"
         :total="total"
         :current-page="page"
         background
@@ -136,40 +102,28 @@ export default {
   },
   // 开始执行分页函数
   mounted () {
-    // this.handleCurrentChange(1)
-    axios
-      .get('http://47.94.199.242:5000/api/v1.0/assets?page=1&size=10')
-      .then(res => {
-        console.log('zheshi assets')
-        console.log(res)
-        this.tableData = res.data.data
-        this.total = res.data.pages * this.limit
-      })
+    this.handleCurrentChange(1)
   },
 
   methods: {
     dayjs (e) {
       return dayjs(e)
     },
-    todetails (tableid, tablename) {
-      console.log('todetails')
-      this.$router.push({ path: '/details/' + tableid + '/' + tablename })
+    tomeasure (tableid, tablename) {
+      console.log('to measure')
       console.log(tableid)
+      this.$router.push({ path: '/measure/' + tableid + '/' + tablename })
     },
-    // tomeasure (tableid, tablename) {
-    //   console.log('to measure')
-    //   this.$router.push({ path: '/measure/' + tableid + '/' + tablename })
-    // },
-    // reset (tableid) {
-    //   axios
-    //     .delete('http://47.94.199.242:5000/api/v1.0/measure/{table_id}')
-    //     .then(res => {
-    //       console.log(res)
-    //     })
-    // },
+    reset (tableid) {
+      axios
+        .delete('http://47.94.199.242:5000/api/v1.0/measure/{table_id}')
+        .then(res => {
+          console.log(res)
+        })
+    },
     // 分页
     handleCurrentChange (val) {
-      // console.log(`当前页: ${val}`)
+      console.log(`当前页: ${val}`)
       axios
         .get('http://47.94.199.242:5000/api/v1.0/assets?page=' + val + '&size=10')
         .then(res => {
@@ -194,7 +148,7 @@ export default {
 }
 </script>
 <style scoped>
-.assets {
+.measure1 {
   padding: 10px;
 }
 .pages {

@@ -13,6 +13,10 @@ import Addaccuracy from '../views/Addaccuracy.vue'
 import Assessment from '../views/Assessment.vue'
 import Fill from '../views/Fill.vue'
 import Dapan from '../views/Dapan.vue'
+import Createac from '../views/Createac.vue'
+import Standard from '../views/Standard.vue'
+import Measure1 from '../views/Measure1.vue'
+import Openjob from '../views/Openjob.vue'
 
 Vue.use(VueRouter)
 
@@ -31,18 +35,13 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
-    path: '/job',
-    name: 'Job',
-    component: Job
-  },
-  {
     path: '/assets',
     name: 'Assets',
     component: Assets
   },
   {
-    // path: '/details/:tablename',
-    path: '/details',
+    path: '/details/:tableid/:tablename',
+    // path: '/details',
     name: 'Details',
     component: Details
   },
@@ -52,14 +51,39 @@ const routes = [
     component: Perfection
   },
   {
-    path: '/measure',
+    path: '/measure1',
+    name: 'Measure1',
+    component: Measure1
+  },
+  {
+    path: '/measure/:tableid/:tablename',
     name: 'Measure',
     component: Measure
+  },
+  {
+    path: '/standard',
+    name: 'Standard',
+    component: Standard
   },
   {
     path: '/accuracy',
     name: 'Accuracy',
     component: Accuracy
+  },
+  {
+    path: '/createac',
+    name: 'Createac',
+    component: Createac
+  },
+  {
+    path: '/openjob/:jobid',
+    name: 'Openjob',
+    component: Openjob
+  },
+  {
+    path: '/job',
+    name: 'Job',
+    component: Job
   },
   {
     path: '/successjob/:jobId',

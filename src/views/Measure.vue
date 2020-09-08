@@ -4,106 +4,108 @@
     <div class="pages">
       <div class="h3">数据实体/规则定义</div>
       <div>
-        <span class="span_size">TPAS-ZYRY</span>
+        <span class="span_size">{{table_name}}</span>
       </div>
     </div>
     <!-- 表格 -->
     <div class="content">
-        <el-table
-          ref="singleTable"
-          :data="tableData"
-          highlight-current-row
-          @current-change="handleCurrentChange"
-          style="width: 100%"
-          height="480">
-          <el-table-column
-            type="index"
-            width="50">
-          </el-table-column>
-          <el-table-column
-            property="date"
-            label="字段名"
-            width="250">
-          </el-table-column>
-          <el-table-column
-            property="name"
-            label="类型"
-            width="250">
-          </el-table-column>
-          <el-table-column
-            property="address"
-            label="规则定义">
-            <el-select v-model="address" placeholder="默认无需检测">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
+      <el-table :data="tableData" highlight-current-row style="width: 100%" height="500">
+        <el-table-column type="index" width="50"></el-table-column>
+        <el-table-column label="字段名" width="300">
+          <template slot-scope="scope">{{ scope.row.FM_TABLEFIELD }}</template>
+        </el-table-column>
+        <el-table-column label="规则定义" width="350">
+          <template slot-scope="scope">
+            <el-select v-model="measures[scope.$index]" placeholder="无需检测">{{scope.row.MS_MEASURE}}
+              <el-option
+                v-for="item in options"
+                :key="item.MS_MEASURE"
+                :label="item.MS_MEASURE"
+                :value="item.MS_MEASURE"
+              ></el-option>
             </el-select>
-          </el-table-column>
-        </el-table>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button type="primary" icon="el-icon-upload" @click="submit(scope.$index)">提交</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
     <!-- 操作 -->
     <div class="pagination_parent">
       <div class="pagination">
         <el-button-group>
-          <el-button type="primary" icon="el-icon-upload">提交</el-button>
+          <el-button type="primary" icon="el-icon-upload" @click="submit(scope.$index)">提交</el-button>
+          <el-button type="primary" icon="el-icon-arrow-left" @click="back">返回</el-button>
         </el-button-group>
       </div>
     </div>
   </div>
 </template>
 <script>
+import axios from 'axios'
+// import dayjs from 'dayjs'
 export default {
   data () {
     return {
-      tableData: [{
-        date: 'ID',
-        name: 'string',
-        address: '无需检测'
-      },
-      {
-        date: 'Orgnization',
-        name: 'string',
-        address: '无需检测'
-      },
-      {
-        date: 'Orgname',
-        name: 'string',
-        address: '无需检测'
-      },
-      {
-        date: 'UserID',
-        name: 'string',
-        address: '无需检测'
-      }],
-      options: [{
-        value: '选项1',
-        label: '无需检测'
-      }, {
-        value: '选项2',
-        label: '标准化检查'
-      }, {
-        value: '选项3',
-        label: '完整性检查'
-      }, {
-        value: '选项4',
-        label: '标准化检查'
-      }, {
-        value: '选项5',
-        label: '奇异值检查'
-      }],
-      value: '',
-      currentRow: null
+      tableData: [],
+      measures: [],
+      options: [],
+      table_name: ''
     }
   },
+
+  mounted () {
+    console.log(this.$route.params)
+    var tableid = this.$route.params.tableid
+    this.table_name = this.$route.params.tablename
+    console.log(this.$route.params.tableid)
+    axios
+      .get('http://47.94.199.242:5000/api/v1.0/assets/' + tableid)
+      .then((res) => {
+        console.log('zheshi measure')
+        console.log(res.data.data)
+        this.tableData = res.data.data
+        // this.tableData.forEach((_, index) => {
+        //   this.measures[index] = '无需检测'
+        // })
+      })
+    axios
+      .get('http://47.94.199.242:5000/api/v1.0/measurelist')
+      .then((res) => {
+        console.log('zheshi measure2')
+        console.log(res.data.data)
+        this.options = res.data.data
+        console.log(this.options)
+      })
+  },
+
   methods: {
-    setCurrent (row) {
-      this.$refs.singleTable.setCurrentRow(row)
+    submit (index) {
+      console.log(this.measures[index])
+      var tableid = this.$route.params.tableid
+      // console.log('http://47.94.199.242:5000/api/v1.0/accuracy?tableid=' + tableid + '&missionname=' + this.tableData[index].FM_TABLEFIELD + '&description=' + this.measures[index])
+      axios
+        .put('http://47.94.199.242:5000/api/v1.0/measure?tableid=' + tableid + '&fieldname=' + this.tableData[index].FM_TABLEFIELD + '&fillkey=' + this.measures[index])
+        .then(res => {
+          console.log(res)
+          if (res.data.code === '200') {
+            console.log(res.data.message)
+            this.$alert('提交成功', '结果', {
+              confirmButtonText: '确定'
+              // callback: () => this.$router.push({ path: '/accuracy/' })
+            })
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
-    handleCurrentChange (val) {
-      this.currentRow = val
+    back () {
+      console.log('back')
+      this.$router.push({ path: '/measure1/' })
     }
   }
 }
@@ -117,14 +119,13 @@ export default {
   border-radius: 4px;
   background-color: white;
   margin-bottom: 10px;
-  margin-top: 60px;
   height: 90px;
 }
 .h3 {
   font-size: 14px;
   font-weight: bold;
   margin-bottom: 8px;
-  color:#909399;
+  color: #909399;
 }
 .span_size {
   font-size: 20px;
@@ -137,7 +138,7 @@ export default {
 .pagination {
   padding: 5px;
   border-radius: 4px;
-  width: 90px;
+  width: 200px;
   margin: 5px auto;
 }
 </style>

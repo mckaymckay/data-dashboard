@@ -1,33 +1,102 @@
 <template>
-  <div>
-    这是商品列表页面
-    <router-link to='/goods/title'>显示商品标题</router-link>
-    <router-link to='/goods/image'>显示商品图片</router-link>
-    // 跳转到购物车页面
-    <router-link to='/cart'>跳转到购物车页面</router-link>
-    <button @click="jump">Button-跳转到购物车页面</button>
-    <div>
-        <router-view></router-view>
-    </div>
+  <div class="parent">
+    <AAA age="18" @haha="onHaha"/>
+    <!-- <el-row>
+            <el-col :span="6">
+               <el-input v-model="searchData"  placeholder="输入姓名搜索"></el-input>
+            </el-col>
+            <el-col :span="2">
+                <el-button type="success" @click="search">搜索</el-button>
+            </el-col>
+        </el-row>
+        <el-table :data="list">
+            <el-table-column label="姓名" prop="name"></el-table-column>
+            <el-table-column label="年龄" prop="age"></el-table-column>
+        </el-table>
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+            :current-page="page" :page-sizes="[1, 2,5, 10]" :page-size="limit"
+            layout="total, sizes, prev, pager, next, jumper" :total="total">
+    </el-pagination>-->
   </div>
 </template>
 <script>
+import AAA from './AAA'
+var listJson = {
+  list: [
+    { name: 'aa', age: 12 },
+    { name: 'bb', age: 13 },
+    { name: 'cc', age: 14 },
+    { name: 'ad', age: 15 },
+    { name: 'eaae', age: 16 },
+    { name: 'faaf', age: 16 },
+    { name: 'hah', age: 17 },
+    { name: 'ii', age: 18 },
+    { name: 'rar', age: 19 },
+    { name: 'dd', age: 10 },
+    { name: 'ee', age: 15 }
+  ]
+}
 export default {
   data () {
     return {
-      msg: ''
+      list: [],
+      data: [],
+      limit: 5,
+      total: null,
+      page: 1,
+      searchData: ''
     }
   },
+  components: {
+    AAA
+  },
+  created () {
+    this.pageList()
+  },
   methods: {
-    jump () {
-    // this.$router.push("/cart")
-    // 传递的参数用{{ $route.query.goodsId }}获取
-      this.$router.push({ path: '/cart?goodsId=12' })
-    // this.$router.go(-2)
-    // 后退两步
+    onHaha (val) {
+      console.log('parent', val)
+    },
+    pageList () {
+      // 发请求拿到数据并暂存全部数据,方便之后操作
+      this.data = listJson.list
+      this.getList()
+    },
+    // 处理数据
+    getList () {
+      // es6过滤得到满足搜索条件的展示数据list
+      const list = this.data.filter((item, index) =>
+        item.name.includes(this.searchData)
+      )
+      this.list = list.filter(
+        (item, index) =>
+          index < this.page * this.limit &&
+          index >= this.limit * (this.page - 1)
+      )
+      this.total = list.length
+    },
+    // 当每页数量改变
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
+      this.limit = val
+      this.getList()
+    },
+    // 当当前页改变
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
+      this.page = val
+      this.getList()
+    },
+    // 搜索过滤数据
+    search () {
+      this.page = 1
+      this.getList()
     }
   }
 }
 </script>
-<style>
+<style scoped>
+.parent {
+  border: 1px solid;
+}
 </style>

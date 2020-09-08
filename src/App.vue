@@ -8,7 +8,7 @@
       </div>
       <!-- 侧栏 -->
       <el-menu
-        default-active="2"
+        :default-active="defaultActive"
         class="el-menu-vertical-demo"
         background-color="#041528"
         text-color="#fff"
@@ -23,11 +23,15 @@
           <i class="el-icon-menu"></i>
           <span slot="title">数据实体</span>
         </el-menu-item>
-        <el-menu-item index="Accuracy">
+        <el-menu-item index="/Measure1">
+          <i class="el-icon-menu"></i>
+          <span slot="title">规则定义</span>
+        </el-menu-item>
+        <el-menu-item index="/Accuracy">
           <i class="el-icon-s-marketing"></i>
           <span slot="title">波动检测</span>
         </el-menu-item>
-        <el-menu-item index="/Job" @click="getJob">
+        <el-menu-item index="/Job">
         <i class="el-icon-edit"></i>
           <span slot="title" >检测任务</span>
         </el-menu-item>
@@ -57,7 +61,7 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 // import Job from '../views/job'
 
 export default {
@@ -66,19 +70,16 @@ export default {
       activeIndex: '/measure'
     }
   },
-  methods: {
-    getJob () {
-      console.log(11111)
-      axios
-        .get('http://localhost:38080/api/v1/jobs')
-        .then(res => {
-          // console.log(res)
-        })
-    },
-    handleClose (key, keyPath) {
-      console.log(key, keyPath)
+  computed: {
+    defaultActive () {
+      // return this.$route.path
+      return this.$route.path
     }
-  }
+  },
+  mounted () {
+    console.log(this.$route.path)
+  },
+  methods: {}
 }
 </script>
 <style lang="scss">
@@ -104,11 +105,13 @@ body {
 .main {
   flex: 1 1 auto;
   min-width: 0;
-  // display: flex;
+  display: flex;
+  flex-direction: column;
 }
 .header{
   height: 60px;
   background-color: #041528;
+  flex:  0 0 auto;
 }
 .logo{
   height: 60px;

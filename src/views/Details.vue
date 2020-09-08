@@ -4,7 +4,8 @@
     <div class="pages">
       <div class="h3">数据实体/详情</div>
       <div>
-        <span class="span_size">TPAS-ZYRY</span>
+        <span class="span_size">{{table_name}}</span>
+        <!-- <span class="span_size">TPAS-LZ</span> -->
       </div>
     </div>
     <!-- 表格 -->
@@ -14,32 +15,38 @@
           :data="tableData"
           highlight-current-row
           style="width: 100%"
-          height="580">
+          height="500">
           <el-table-column type="index" width="50">
           </el-table-column>
           <el-table-column label="字段名" width="200">
             <template slot-scope="scope">
-                {{ scope.row.name }}
+                {{ scope.row.FM_TABLEFIELD }}
             </template>
           </el-table-column>
-          <el-table-column label="类型" width="200">
+          <el-table-column label="质量报告" width="200">
             <template slot-scope="scope">
-              {{ scope.row.type }}
+              {{ scope.row.PS_PROBLEM }}
             </template>
           </el-table-column>
           <el-table-column label="规则定义" width="250">
-            <el-select v-model="value" placeholder="无需检测">
+            <template slot-scope="scope">
+              {{ scope.row.MS_MEASURE }}
+            </template>
+            <!-- <el-select v-model="value" placeholder="无需检测">
                 <el-option
                   v-for="item in options"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value">
                 </el-option>
-            </el-select>
+            </el-select> -->
           </el-table-column>
           <el-table-column
             property="address"
-            label="结果">
+            label="质量改进">
+            <template slot-scope="scope">
+              <span v-if="scope.row.PS_PROBLEM" style="color:#409EFF">更改</span>
+            </template>
           </el-table-column>
         </el-table>
     </div>
@@ -61,6 +68,7 @@ export default {
   data () {
     return {
       tableData: [],
+      table_name: '',
       options: [{
         value: '选项1',
         label: '无需检测'
@@ -82,22 +90,27 @@ export default {
     }
   },
   mounted () {
-    var tname = this.$route.params.tablename
-    console.log(this.$route.params.tablename)
+    console.log(this.$route.params)
+    this.table_name = this.$route.params.tablename
+    var tableid = this.$route.params.tableid
+    console.log(this.$route.params.tableid)
     axios
-      .get('http://localhost:38080/api/v1/metadata/hive/dbs/tables')
+      // .get('http://localhost:38080/api/v1/metadata/hive/dbs/tables')
+      .get('http://47.94.199.242:5000/api/v1.0/assets/' + tableid + '?page=1&size=10')
       .then(res => {
         console.log('zheshi details')
-        var rows = res.data.default
-        if (rows) {
-          rows.forEach(item => {
-            if (item.tableName === tname) {
-              console.log(item.sd.cols)
-              this.tableData = item.sd.cols
-              console.log(item.sd.cols)
-            }
-          })
-        }
+        console.log(res.data.data)
+        this.tableData = res.data.data
+        // var rows = res.data.default
+        // if (rows) {
+        //   rows.forEach(item => {
+        //     if (item.tableName === tname) {
+        //       console.log(item.sd.cols)
+        //       this.tableData = item.sd.cols
+        //       console.log(item.sd.cols)
+        //     }
+        //   })
+        // }
       })
   },
   methods: {
@@ -111,12 +124,6 @@ export default {
       var tname = this.$route.params.tablename
       console.log(tname)
       this.$router.push({ path: '/perfection/' + tname })
-    },
-    setCurrent (row) {
-      this.$refs.singleTable.setCurrentRow(row)
-    },
-    handleCurrentChange (val) {
-      this.currentRow = val
     }
   }
 }
