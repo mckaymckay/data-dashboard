@@ -65,21 +65,33 @@
 // import Job from '../views/job'
 
 export default {
+  provide () {
+    return {
+      reload: this.reload
+    }
+  },
   data () {
     return {
-      activeIndex: '/measure'
+      activeIndex: '/measure',
+      isRouterAlive: true
     }
   },
   computed: {
     defaultActive () {
-      // return this.$route.path
       return this.$route.path
     }
   },
   mounted () {
     console.log(this.$route.path)
   },
-  methods: {}
+  methods: {
+    reload () {
+      this.isRouterAlive = false
+      this.$$nextTick(function () {
+        this.isRouterAlive = true
+      })
+    }
+  }
 }
 </script>
 <style lang="scss">
@@ -107,6 +119,7 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  overflow: auto;
 }
 .header{
   height: 60px;

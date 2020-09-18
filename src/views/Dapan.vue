@@ -1,5 +1,14 @@
 <template>
   <div class="dapan">
+    <!-- <div class="count">100</div> -->
+    <!-- 页面标识 -->
+    <div class="pages">
+      <div class="h3">总体大盘</div>
+      <div>
+        <span class="span_size" style="margin-left: 100px;">数据表数量:</span>
+        <span style="color:#409EFF;font-size: x-large">{{tablenumber}}</span>
+      </div>
+    </div>
     <div class="head flex">
       <div class="data-table flex container flex-1">
         <div class="flex-1">
@@ -10,39 +19,41 @@
                 <span style="margin-left: 10px">{{ scope.row.TM_TABLENAME }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="大小" width="65px">
+            <el-table-column label="大小" width="90px">
               <template slot-scope="scope">
                 <span style="margin-left: 10px">{{ scope.row.TM_HISTORYSIZE }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="条数" width="65px">
+            <el-table-column label="条数" width="90px">
               <template slot-scope="scope">
                 <span style="margin-left: 10px">{{ scope.row.TM_HISTORYSIZE }}</span>
               </template>
             </el-table-column>
           </el-table>
         </div>
-        <div class="flex-2 flex column data-table_info">
+        <el-divider direction="vertical"></el-divider>
+        <el-divider direction="vertical"></el-divider>
+        <!-- <div class="flex-2 flex column data-table_info">
           <div class="title flex-2" style="color:#303133">数据表信息</div>
           <div class="flex-2" style="color:#409EFF">数据表总数:
             <span>{{tablenumber}}</span>
           </div>
           <img :src="ajpg" alt />
-        </div>
+        </div> -->
         <div class="flex-1">
-          <div class="table-title">表量top10</div>
+          <div class="table-title">表增量top10</div>
           <el-table :data="tableData2" stripe>
             <el-table-column label="表名">
               <template slot-scope="scope">
                 <span style="margin-left: 10px">{{ scope.row.TM_TABLENAME }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="大小" width="65px">
+            <el-table-column label="大小" width="90px">
               <template slot-scope="scope">
                 <span style="margin-left: 10px">{{ scope.row.TM_HISTORYSIZE }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="条数" width="65px">
+            <el-table-column label="条数" width="90px">
               <template slot-scope="scope">
                 <span style="margin-left: 10px">{{ scope.row.TM_HISTORYSIZE }}</span>
               </template>
@@ -50,16 +61,16 @@
           </el-table>
         </div>
       </div>
-      <div class="person-info container flex-0">
+      <!-- <div class="person-info container flex-0">
         <div class="title">用户信息</div>
         <div>
           <i class="user-icon el-icon-s-custom"></i>
         </div>
-      </div>
+      </div> -->
     </div>
     <div class="body flex container">
       <div class="flex-0 data-task">
-        <div class="title" style="color:#303133">数据任务</div>
+        <!-- <div class="title" style="color:#303133">数据任务</div> -->
         <div class="instance-status_monitor">
           <div class="table-title">实例状态监控</div>
           <el-table :data="tableData2" stripe>
@@ -71,6 +82,7 @@
           </el-table>
         </div>
       </div>
+      <el-divider direction="vertical"></el-divider>
       <div class="flex-1">
         <div class="table-title">质量检测有问题top10</div>
         <el-table :data="tableData3" stripe>
@@ -146,12 +158,32 @@ export default {
       console.log(res.data.data)
       this.tablenumber = res.data.data
     })
+  },
+  methods: {
+
   }
 }
 </script>
 <style scoped lang="scss">
 .dapan {
   padding: 10px;
+.pages {
+  padding: 10px;
+  border-radius: 4px;
+  background-color: white;
+  margin-bottom: 10px;
+  height: 90px;
+}
+.h3 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color:#909399;
+}
+.span_size {
+  font-size: 20px;
+  color: #303133;
+}
   .flex {
     display: flex;
   }
@@ -210,7 +242,7 @@ export default {
     font-size: 40px;
   }
   .instance-status_monitor {
-    margin-top: 20px;
+    // margin-top: 20px;
   }
 }
 </style>

@@ -4,7 +4,7 @@
     <div class="pages">
       <div class="h3">数据实体/详情</div>
       <div>
-        <span class="span_size">TPAS-ZYRY</span>
+        <span class="span_size">{{tablename}}</span>
       </div>
     </div>
     <!-- 表格 -->
@@ -71,6 +71,7 @@
 export default {
   data () {
     return {
+      tablename: '',
       tableData: [{
         date: 'TPAS-ZYRY',
         name: '无需检测',

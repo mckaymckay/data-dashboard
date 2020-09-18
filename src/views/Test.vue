@@ -1,102 +1,140 @@
 <template>
-  <div class="parent">
-    <AAA age="18" @haha="onHaha"/>
-    <!-- <el-row>
-            <el-col :span="6">
-               <el-input v-model="searchData"  placeholder="输入姓名搜索"></el-input>
-            </el-col>
-            <el-col :span="2">
-                <el-button type="success" @click="search">搜索</el-button>
-            </el-col>
-        </el-row>
-        <el-table :data="list">
-            <el-table-column label="姓名" prop="name"></el-table-column>
-            <el-table-column label="年龄" prop="age"></el-table-column>
-        </el-table>
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-            :current-page="page" :page-sizes="[1, 2,5, 10]" :page-size="limit"
-            layout="total, sizes, prev, pager, next, jumper" :total="total">
-    </el-pagination>-->
-  </div>
+  <div class="content">
+    <p class="prompt_p">&nbsp;&nbsp;&nbsp;近七天温度折线图</p>
+    <div class="seven_echarts"  id="seven"></div>
+ </div>
 </template>
-<script>
-import AAA from './AAA'
-var listJson = {
-  list: [
-    { name: 'aa', age: 12 },
-    { name: 'bb', age: 13 },
-    { name: 'cc', age: 14 },
-    { name: 'ad', age: 15 },
-    { name: 'eaae', age: 16 },
-    { name: 'faaf', age: 16 },
-    { name: 'hah', age: 17 },
-    { name: 'ii', age: 18 },
-    { name: 'rar', age: 19 },
-    { name: 'dd', age: 10 },
-    { name: 'ee', age: 15 }
-  ]
-}
+<script type="text/javascript">
 export default {
   data () {
     return {
-      list: [],
-      data: [],
-      limit: 5,
-      total: null,
-      page: 1,
-      searchData: ''
+      seven_chart: null,
+      month_chart: null,
+      seven_option: {
+        title: {
+          // text: '未来一周气温变化', // 感觉头部有点乱，没使用自带的标题
+          // subtext: '纯属虚构',
+          x: 'left',
+          align: 'center'
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        legend: {
+          data: ['最高气温', '最低气温']
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        toolbox: {
+          feature: {
+            magicType: { type: ['line', 'bar'] }, // 柱状图和西和折线图切换
+            restore: {}, // 刷新
+            saveAsImage: {} // 将图表以折线图的形式展现
+          }
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: ['10-11', '11-26', '11-27', '11-28', '11-29', '11-30', '12-01', '12-02', '11-26', '11-27', '11-28', '11-29', '11-30', '12-01', '12-02', '11-26', '11-27', '11-28', '11-29', '11-30', '12-01', '12-02', '11-26', '11-27', '11-28', '11-29', '11-30', '12-01', '12-02', '11-26', '11-27', '11-28', '11-29', '11-30', '12-01', '12-02', '10-11']
+        },
+        yAxis: {
+          name: '℃',
+          nameLocation: 'end',
+          type: 'value',
+          axisLabel: {
+            formatter: '{value} '
+          }
+        },
+        dataZoom: [{
+          type: 'inside'
+        }],
+        series: [
+          {
+            name: '最低气温',
+            type: 'line',
+            data: [0, -1, -3, -4, 0, -2, -4],
+            lineStyle: { // 设置折线色颜色
+              color: '#3f89ec'
+            },
+            itemStyle: { // 设置折线折点的颜色
+              normal: {
+                color: '#3f89ec'
+              }
+            }
+          },
+          {
+            name: '最高气温',
+            type: 'line',
+            data: [9, 10, 6, 7, 12, 11, 8, 9, 10, 6, 7, 12, 11, 8, 9, 10, 6, 7, 12, 11, 8, 9, 10, 6, 7, 12, 11, 8, 9, 10, 6, 7, 12, 11, 8, 9, 10, 6, 7, 12, 11, 8],
+            lineStyle: { // 设置折线色颜色
+              color: 'black'
+            },
+            itemStyle: { // 设置折线折点的颜色
+              normal: {
+                color: 'black'
+              }
+            }
+          },
+          {
+            name: '平行于y轴的趋势线',
+            type: 'line',
+            markLine: {
+              name: 'aa',
+              data: [
+                {
+                  name: '0℃标准线',
+                  yAxis: 0,
+                  lineStyle: { // 设置折线色颜色
+                    color: 'red'
+                  }
+                }
+              ],
+              symbol: ['arrow', 'none'], // 将箭头向左  默认值是向右的
+              label: {
+                show: true,
+                position: 'middle', // markline描述位于中间   right，left，middle
+                formatter: '{b}: {c}' // 显示name中的描述
+              }
+
+            }
+          }
+
+        ]
+      }
     }
   },
-  components: {
-    AAA
-  },
-  created () {
-    this.pageList()
+  mounted: function () {
+    this.get_echarts()
   },
   methods: {
-    onHaha (val) {
-      console.log('parent', val)
-    },
-    pageList () {
-      // 发请求拿到数据并暂存全部数据,方便之后操作
-      this.data = listJson.list
-      this.getList()
-    },
-    // 处理数据
-    getList () {
-      // es6过滤得到满足搜索条件的展示数据list
-      const list = this.data.filter((item, index) =>
-        item.name.includes(this.searchData)
-      )
-      this.list = list.filter(
-        (item, index) =>
-          index < this.page * this.limit &&
-          index >= this.limit * (this.page - 1)
-      )
-      this.total = list.length
-    },
-    // 当每页数量改变
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
-      this.limit = val
-      this.getList()
-    },
-    // 当当前页改变
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
-      this.page = val
-      this.getList()
-    },
-    // 搜索过滤数据
-    search () {
-      this.page = 1
-      this.getList()
+    get_echarts: function () {
+      this.seven_chart = this.echarts.init(document.getElementById('seven'))
+      // 把配置和数据放这里
+      this.seven_chart.setOption(this.seven_option)
     }
+  },
+  beforeDestroy () {
+    if (!this.seven_chart) { return }
+    this.seven_chart.dispose()
+    this.seven_chart = null
   }
 }
 </script>
-<style scoped>
-.parent {
-  border: 1px solid;
+<style type="text/css">
+.content{
+ width: 100%;
+}
+.content p{
+ margin-top: 1rem;
+ font-size: 0.4rem;
+ color: #666666;
+}
+.seven_echarts{
+ height: 11rem;
+ width: 94%;
 }
 </style>

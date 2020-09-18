@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+// import ECharts from 'vue-echarts'
 // import Measure from '../views/Measure.vue'
 import Job from '../views/Job.vue'
 import Assets from '../views/Assets.vue'
@@ -8,7 +9,6 @@ import Perfection from '../views/Perfection.vue'
 import Measure from '../views/Measure.vue'
 import Accuracy from '../views/Accuracy.vue'
 import Successjob from '../views/Successjob.vue'
-import Test from '../views/Test.vue'
 import Addaccuracy from '../views/Addaccuracy.vue'
 import Assessment from '../views/Assessment.vue'
 import Fill from '../views/Fill.vue'
@@ -17,6 +17,10 @@ import Createac from '../views/Createac.vue'
 import Standard from '../views/Standard.vue'
 import Measure1 from '../views/Measure1.vue'
 import Openjob from '../views/Openjob.vue'
+import Openjob2 from '../views/Openjob2.vue'
+import Resac from '../views/Resac.vue'
+import Test from '../views/Test.vue'
+// import Test22 from '../views/Test22.vue'
 
 Vue.use(VueRouter)
 
@@ -46,7 +50,7 @@ const routes = [
     component: Details
   },
   {
-    path: '/perfection',
+    path: '/perfection/:tableid/:tablename',
     name: 'Perfection',
     component: Perfection
   },
@@ -76,9 +80,22 @@ const routes = [
     component: Createac
   },
   {
-    path: '/openjob/:jobid',
+    // 波动检测任务开启
+    path: '/openjob/:tableid',
     name: 'Openjob',
     component: Openjob
+  },
+  {
+    // 波动检测任务结果
+    path: '/resac/:tableid/:missionname/:status',
+    name: 'Resac',
+    component: Resac
+  },
+  {
+    // 实体检测任务开启
+    path: '/openjob2/:tableid',
+    name: 'Openjob2',
+    component: Openjob2
   },
   {
     path: '/job',
@@ -106,7 +123,7 @@ const routes = [
     component: Assessment
   },
   {
-    path: '/fill',
+    path: '/fill/:tableid/:tablename/:fieldname',
     name: 'Fill',
     component: Fill
   }

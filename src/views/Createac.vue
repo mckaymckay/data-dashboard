@@ -24,7 +24,7 @@
         </el-form-item>
         <div style="height:20px"></div>
         <el-form-item label="选择数据表" prop="table">
-          <el-select v-model="ruleForm.table" @change="func2()" style="width: 300px" placeholder="请选择数据表">
+          <el-select v-model="ruleForm.table" style="width: 300px" placeholder="请选择数据表">
             {{tables}}
             <el-option
               v-for="item in dataList"

@@ -1,10 +1,10 @@
 <template>
-  <div class="openjob">
+  <div class="openjob2">
     <!-- 页面标识 -->
     <div class="pages">
-      <div class="h3">波动检测</div>
+      <div class="h3">实体检测</div>
       <div>
-        <span class="span_size">执行波动检测任务</span>
+        <span class="span_size">执行实体检测任务</span>
       </div>
     </div>
     <!-- 表格 -->
@@ -25,6 +25,7 @@
               :picker-options="pickerOptions"
             >
               {{opentime1}}
+              <!-- <span>hh</span> -->
             </el-date-picker>
             <el-button @click="add" v-if="index===timeList.length-1&&index<5">
               <i class="el-icon-plus"></i>
@@ -45,6 +46,7 @@
 </template>
 <script>
 import axios from 'axios'
+// import qs from 'qs'
 export default {
   data () {
     return {
@@ -58,7 +60,7 @@ export default {
         ],
         disabledDate (time) {
           // 此条为设置禁止用户选择今天之前的日期，包含今天。
-          // return time.getTime() <= (Date.now() - (24 * 60 * 60 * 1000))
+          // return time.getTime() <= (Date.now()-(24 * 60 * 60 * 1000));
           // 此条为设置禁止用户选择今天之前的日期，不包含今天。
           //   console.log(Date.now())
           return time.getTime() <= Date.now()
@@ -66,12 +68,10 @@ export default {
       },
       value1: '',
       opentime1: null,
-      timeList: [
-        {
-          id: '',
-          value: ''
-        }
-      ]
+      timeList: [{
+        id: '',
+        value: ''
+      }]
     }
   },
   mounted () {
@@ -87,32 +87,30 @@ export default {
     },
     submit () {
       console.log(this.timeList)
-      const arr = JSON.parse(JSON.stringify(this.timeList.map((v) => ({
-        FL_TABLEID: v.id,
-        FL_UPDATETIME: v.value
-      }))))
-      for (let i = 0; i < 6 - this.timeList.length; i++) {
-        arr.push({
-          FL_TABLEID: this.$route.params.tableid,
-          FL_UPDATETIME: ''
-        })
+      // const arr = JSON.parse(JSON.stringify(this.timeList.map((v) => ({
+      //   table_id: v.id,
+      //   time: v.value
+      // }))))
+
+      const result = {
+        table_id: this.timeList[0].id,
+        time: this.timeList.map(v => ({
+          JP_EXECUTIONTIME: v.value
+        }))
       }
-      console.log(arr)
+      console.log(result)
       axios({
-        url: 'http://47.94.199.242:5000/api/v1.0/accuracymission',
+        url: 'http://47.94.199.242:5000/api/v1.0/jobs',
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
-        data: {
-          data: arr
-        }
+        data: result
       })
         .then((res) => {
           console.log(res)
           if (res.data.code === '200') {
-            console.log(res.data.message)
             this.$alert('提交成功', '结果', {
               confirmButtonText: '确定',
-              callback: () => this.$router.push({ path: '/accuracy/' })
+              callback: () => this.$router.push({ path: '/job/' })
             })
           }
         })
@@ -122,7 +120,7 @@ export default {
 </script>
 
 <style scoped>
-.openjob {
+.openjob2 {
   padding: 10px;
   flex: 1 1 auto;
   overflow: auto;

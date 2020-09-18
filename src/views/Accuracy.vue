@@ -47,16 +47,18 @@
         <el-table-column label="操作" width="200">
           <template slot-scope="scope">
             <el-button-group>
-            <el-button type="primary" icon="el-icon-view" @click="checkjob">*</el-button>
-            <el-button type="primary" icon="el-icon-delete" @click="deletejob"></el-button>
-            <!-- <el-button type="primary" icon="el-icon-video-play" @click="openjob(scope.row.FM_ID)"></el-button> -->
-            <el-button v-if="scope.row['FM_STATUS']==='执行'" type="primary" @click="redefine(scope.row.JS_ID)" icon="el-icon-video-pause"></el-button>
-            <el-button v-else-if="scope.row['FM_STATUS']==='暂停'" type="primary" @click="redefine(scope.row.JS_ID)" icon="el-icon-video-play"></el-button>
+            <el-button type="primary" icon="el-icon-view" @click="checkjob"></el-button>
+            <el-button type="primary" icon="el-icon-delete" @click="deletejob(scope.row.FM_ID)"></el-button>
+            <el-button v-if="scope.row['FM_STATUS']==='执行中'" type="primary" @click="redefine(scope.row.FM_ID)" icon="el-icon-video-pause"></el-button>
+            <el-button v-else-if="scope.row['FM_STATUS']==='暂停'" type="primary" @click="openjob(scope.row.FM_ID)" icon="el-icon-video-play"></el-button>
+            <el-button v-else-if="scope.row['FM_STATUS']==='已完成'" type="primary" @click="openjob(scope.row.FM_ID)" icon="el-icon-circle-check"></el-button>
             </el-button-group>
           </template>
         </el-table-column>
         <el-table-column label="结果">
-              <el-button type="success" icon="el-icon-s-data" circle></el-button>
+          <template slot-scope="scope">
+              <el-button type="success" icon="el-icon-s-data" circle @click="toresult(scope.row.FM_ID,scope.row.FM_MISSIONNAME,scope.row.FM_STATUS)"></el-button>
+              </template>
             </el-table-column>
       </el-table>
     </div>
@@ -90,29 +92,60 @@ export default {
     }
   },
 
-  computed: {},
-
-  watch: {},
-
-  created () {},
-
   mounted () {
     this.handleCurrentChange(1)
   },
 
   methods: {
+    // 新建任务
     tomeasure () {
       this.$router.push({ path: '/createac/' })
     },
+    // 开启任务
+    openjob (tableid) {
+      console.log(tableid)
+      this.$router.push({ path: '/openjob/' + tableid })
+    },
+    // 查看任务
     checkjob () {
       console.log('checkjob')
     },
-    deletejob () {
-      console.log('deletejob')
+    // 删除任务
+    deletejob (tableid) {
+      this.$confirm('此操作将删除该表所有的任务及相关数据，您确认要删除任务吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios
+          .delete('http://47.94.199.242:5000/api/v1.0/accuracy?tableid=' + tableid)
+          .then(res => {
+            console.log(res)
+            console.log(res.data.code)
+            if (res.data.code === '200') {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.handleCurrentChange(1)
+              // location.reload()
+            } else if (res.data.code === '2003') {
+              this.$message({
+                type: 'info',
+                message: '任务在执行中,不能删除!'
+              })
+            }
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
     },
-    openjob (jobid) {
-      console.log(jobid)
-      this.$router.push({ path: '/openjob/' + jobid })
+    // 查看结果
+    toresult (tableid, missionname, status) {
+      this.$router.push({ path: '/resac/' + tableid + '/' + missionname + '/' + status })
     },
     // 分页
     handleCurrentChange (val) {

@@ -4,25 +4,25 @@
     <div class="pages">
       <div class="h3">数据实体/详情/质量改进</div>
       <div>
-        <span class="span_size">空值填充    </span>
+        <span class="span_size">{{tablename}}</span>
       </div>
     </div>
     <!-- 表格 -->
     <div class="content">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="300px" class="demo-ruleForm">
             <el-form-item label="数据表" prop="field">
-              <el-input v-model="ruleForm.field" style="width: 300px" placeholder="Orgnization">
-                <span>TPAS_JSDRBZRXX</span>
+              <el-input v-model="ruleForm.tablename" style="width: 300px" placeholder="">
+                <span>{{tablename}}</span>
                 </el-input>
             </el-form-item>
             <el-form-item label="问题字段" prop="question">
-              <el-input v-model="ruleForm.question" style="width: 300px" placeholder="">DRNJ</el-input>
+              <el-input v-model="ruleForm.fieldname" style="width: 300px" placeholder="">{{fieldname}}</el-input>
             </el-form-item>
             <el-form-item label="问题描述" prop="advice">
-              <el-input v-model="ruleForm.advice" style="width: 300px" placeholder="">含有空值</el-input>
+              <el-input v-model="ruleForm.problem" style="width: 300px" placeholder="">含有空值</el-input>
             </el-form-item>
             <el-form-item label="填充值" prop="fill">
-              <el-input v-model="ruleForm.fill" style="width: 300px" placeholder="请输入填充值"></el-input>
+              <el-input v-model="ruleForm.fillkey" style="width: 300px" placeholder="请输入填充值">{{modifyvalue}}</el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="submitForm('ruleForm')">修改</el-button>
@@ -42,53 +42,60 @@
   </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
   data () {
     return {
+      tableid: '',
+      tablename: '',
+      fieldname: '',
+      modifyvalue: null,
       ruleForm: {
-        field: 'TPAS_JSDRBZRXX',
-        question: 'DRNJ',
-        advice: '含有空值',
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+        tablename: '',
+        fieldname: '',
+        problem: '含有空值',
+        fillkey: ''
       },
       rules: {
-        fields: [
-          { required: true, message: '', trigger: 'blur' },
-          { min: 3, max: 5, message: '', trigger: 'blur' }
-        ],
-        question: [
-          { required: true, message: '', trigger: 'change' }
-        ],
-        advice: [
-          { required: true, message: '', trigger: 'change' }
-        ],
-        fill: [
-          { required: true, message: '', trigger: 'change' }
-        ]
+        // fields: [
+        //   { required: true, message: '', trigger: 'blur' },
+        //   { min: 3, max: 5, message: '', trigger: 'blur' }
+        // ],
+        // fill: [
+        //   { required: true, message: '', trigger: 'change' }
+        // ]
       }
     }
   },
+  mounted () {
+    console.log(this.$route.params)
+    this.tableid = this.$route.params.tableid
+    this.tablename = this.$route.params.tablename
+    this.ruleForm.tablename = this.$route.params.tablename
+    this.ruleForm.fieldname = this.$route.params.fieldname
+  },
   methods: {
     submitForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        this.$alert('提交成功', '结果', {
-          confirmButtonText: '确定'
-          // callback: () => this.$router.push({ path: '/accuracy/' })
-        })
-        // if (valid) {
-        //   alert('submit!')
-        // } else {
-        //   console.log('error submit!!')
-        //   return false
-        // }
-      })
+      this.modifyvalue = this.ruleForm.fillkey
+      // console
+      if (!this.modifyvalue) {
+        alert('请输入填充值')
+        return false
+      }
+      axios
+        .put('http://47.94.199.242:5000/api/v1.0/quality?tableid=' + this.tableid + '&fieldname=' + this.$route.params.fieldname + '&modifyvalue=' + this.modifyvalue)
+        .then(res => {
+          if (res.status === 200) {
+            console.log(res)
+            this.$alert('修改成功', '提示', {
+              confirmButtonText: '确定',
+              callback: action => {
+                this.$router.push({ path: '/assessment/' })
+              }
+            })
+          }
+        }
+        )
     },
     resetForm (formName) {
       this.$refs[formName].resetFields()

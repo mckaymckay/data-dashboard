@@ -22,7 +22,7 @@
         @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55">
             </el-table-column>
-            <el-table-column  label="任务名称" width="200">
+            <el-table-column  label="任务名称" width="300">
               <template slot-scope="scope">
                 <el-button  type="text" @click="tosuccessJob(scope.row.JS_ID)">{{ scope.row["JS_JOBNAME"] }}</el-button>
               </template>
@@ -49,17 +49,20 @@
             </el-table-column>
             <el-table-column prop="status" label="状态" width="150">
               <template slot-scope="scope">
-                <el-button v-if="scope.row['JS_STATUS']==='暂停'" type="danger" plain="">暂停</el-button>
-                <el-button v-else-if="scope.row['JS_STATUS']==='执行'" type="success" plain="">执行</el-button>
+                <el-button v-if="scope.row['JS_STATUS']==='暂停'" type="danger" >暂停</el-button>
+                <el-button v-if="scope.row['JS_STATUS']==='已完成'" type="success" >完成</el-button>
+                <el-button v-else-if="scope.row['JS_STATUS']==='执行中'" type="success" >执行</el-button>
                  <!-- <el-button type="danger" plain="">暂停</el-button> -->
               </template>
             </el-table-column>
             <el-table-column label="操作" width="200">
               <el-button-group slot-scope="scope" >
                 <el-button type="primary" icon="el-icon-view"></el-button>
-                <el-button type="primary" icon="el-icon-delete"></el-button>
-                <el-button v-if="scope.row['JS_STATUS']==='执行'" type="primary" @click="redefine(scope.row.JS_ID)" icon="el-icon-video-pause"></el-button>
-                <el-button v-else-if="scope.row['JS_STATUS']==='暂停'" type="primary" @click="redefine(scope.row.JS_ID)" icon="el-icon-video-play"></el-button>
+                <el-button type="primary" icon="el-icon-delete" @click="deletejob(scope.row.JS_ID)"></el-button>
+                <el-button v-if="scope.row['JS_STATUS']==='执行中'" type="primary" @click="redefine(scope.row.JS_TABLEID)" icon="el-icon-video-pause"></el-button>
+                <el-button v-else-if="scope.row['JS_STATUS']==='暂停'" type="primary" @click="openjob(scope.row.JS_TABLEID)" icon="el-icon-video-play"></el-button>
+                <el-button v-else-if="scope.row['JS_STATUS']==='已完成'" type="primary" @click="openjob(scope.row.JS_TABLEID)" icon="el-icon-video-play"></el-button>
+
               </el-button-group>
             </el-table-column>
             <el-table-column label="结果">
@@ -122,6 +125,37 @@ export default {
           this.tableData = res.data.data
           this.total = res.data.pages * this.limit
         })
+    },
+    // 删除任务
+    deletejob (jobid) {
+      this.$confirm('此操作将删除该表所有的任务及相关数据，您确认要删除任务吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios
+          .delete('http://47.94.199.242:5000/api/v1.0/jobs/' + jobid)
+          .then(res => {
+            console.log(res)
+            if (res.status === 200) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+            }
+            this.handleCurrentChange(1)
+            // location.reload()
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
+    },
+    openjob (tableid) {
+      console.log(tableid)
+      this.$router.push({ path: '/openjob2/' + tableid })
     },
     tosuccessJob (jobid) {
       // console.log(jobid)

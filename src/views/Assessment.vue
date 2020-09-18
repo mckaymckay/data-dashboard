@@ -37,19 +37,10 @@
         </el-table-column>
       <!-- 更新时间 -->
         <el-table-column label="操作" width="300">
-          <template slot-scope="">
-            <span style="margin-left: 10px;color:#409EFF" @click="tofill">更改</span>
+          <template slot-scope="scope">
+            <span style="margin-left: 10px;color:#409EFF" @click="tofill(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)">更改</span>
           </template>
         </el-table-column>
-        <!-- 操作  -->
-        <!-- <el-table-column label="操作">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="text"
-              @click="handleDelete(scope.$index, scope.row)">更改</el-button>
-          </template>
-        </el-table-column> -->
       </el-table>
     </div>
     <!-- 分页 -->
@@ -86,12 +77,6 @@ export default {
     }
   },
 
-  computed: {},
-
-  watch: {},
-
-  created () {},
-
   mounted () {
     this.handleCurrentChange(1)
   },
@@ -103,8 +88,8 @@ export default {
     handleDelete (index, row) {
       console.log(index, row)
     },
-    tofill () {
-      this.$router.push({ path: '/fill/' })
+    tofill (tableid, tablename, fieldname) {
+      this.$router.push({ path: '/fill/' + tableid + '/' + tablename + '/' + fieldname })
     },
     // 分页
     handleCurrentChange (val) {

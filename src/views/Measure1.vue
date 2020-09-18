@@ -54,8 +54,9 @@
           <template slot-scope="scope">
             <!-- <el-button size="mini" type="text" @click="todetails(scope.row.TM_ID)">详情</el-button> -->
             <el-button size="mini" type="text" @click="tomeasure(scope.row.TM_ID,scope.row.TM_TABLENAME)">规则定义</el-button>
-            <el-button size="mini" type="text" @click="reset(scope.row.TM_ID)">重置规则</el-button>
-            <el-dialog
+            <el-button size="mini" type="text"  v-if="scope.row.TM_ISDEFINED === '1'" @click="reset(scope.row.TM_ID)">重置规则</el-button>
+            <el-button size="mini" type="text"  v-else-if="scope.row.TM_ISDEFINED === '0'" @click="reset(2)">重置规则</el-button>
+            <!-- <el-dialog
               title="提示"
               :visible.sync="dialogVisible"
               width="30%">
@@ -64,7 +65,7 @@
                 <el-button @click="dialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
               </span>
-            </el-dialog>
+            </el-dialog> -->
           </template>
         </el-table-column>
       </el-table>
@@ -86,8 +87,9 @@
 <script>
 import axios from 'axios'
 import dayjs from 'dayjs'
+// import ECharts from 'vue-echarts'
 export default {
-
+  inject: ['reload'],
   data () {
     return {
       dialogVisible: false, // 重置规则的对话框
@@ -114,12 +116,45 @@ export default {
       console.log(tableid)
       this.$router.push({ path: '/measure/' + tableid + '/' + tablename })
     },
+    // 重置
     reset (tableid) {
-      axios
-        .delete('http://47.94.199.242:5000/api/v1.0/measure/{table_id}')
-        .then(res => {
-          console.log(res)
+      console.log(tableid)
+      this.$confirm("此操作将删除该表所有的度量规则，回到默认状态，即'无需检测'，您确认要重置规则吗？", '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios
+          .delete('http://47.94.199.242:5000/api/v1.0/measure/' + tableid)
+          .then(res => {
+            console.log(res)
+            if (res.status === 200) {
+              this.$message({
+                type: 'success',
+                message: '已重置!'
+              })
+            }
+            // location.reload()
+            this.handleCurrentChange(1)
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
         })
+      })
+    },
+    // 不需要重置
+    reset2 () {
+      this.$alert('无需重置规则', '提示', {
+        confirmButtonText: '确定',
+        callback: action => {
+          this.$message({
+            type: 'info',
+            message: `action: ${action}`
+          })
+        }
+      })
     },
     // 分页
     handleCurrentChange (val) {

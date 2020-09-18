@@ -45,7 +45,7 @@
             property="address"
             label="质量改进">
             <template slot-scope="scope">
-              <span v-if="scope.row.PS_PROBLEM" style="color:#409EFF">更改</span>
+              <span v-if="scope.row.PS_PROBLEM" style="color:#409EFF" @click="tofill(scope.row.FM_TABLEFIELD)">更改</span>
             </template>
           </el-table-column>
         </el-table>
@@ -101,16 +101,6 @@ export default {
         console.log('zheshi details')
         console.log(res.data.data)
         this.tableData = res.data.data
-        // var rows = res.data.default
-        // if (rows) {
-        //   rows.forEach(item => {
-        //     if (item.tableName === tname) {
-        //       console.log(item.sd.cols)
-        //       this.tableData = item.sd.cols
-        //       console.log(item.sd.cols)
-        //     }
-        //   })
-        // }
       })
   },
   methods: {
@@ -119,6 +109,9 @@ export default {
     },
     back () {
       this.$router.push({ path: '/Assets' })
+    },
+    tofill (fieldname) {
+      this.$router.push({ path: '/fill/' + this.$route.params.tableid + '/' + this.$route.params.tablename + '/' + fieldname })
     },
     toperfection () {
       var tname = this.$route.params.tablename

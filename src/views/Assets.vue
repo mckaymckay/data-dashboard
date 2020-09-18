@@ -83,11 +83,9 @@
           </template>
         </el-table-column>
         <!-- 操作  -->
-        <el-table-column label="操作*">
+        <!-- <el-table-column label="操作*">
           <template slot-scope="scope">
             <el-button size="mini" type="text" @click="todetails(scope.row.TM_ID,scope.row.TM_TABLENAME)">详情</el-button>
-            <!-- <el-button size="mini" type="text" @click="tomeasure(scope.row.TM_ID,scope.row.TM_TABLENAME)">规则定义</el-button>
-            <el-button size="mini" type="text" @click="reset(scope.row.TM_ID)">重置规则</el-button> -->
             <el-dialog
               title="提示"
               :visible.sync="dialogVisible"
@@ -99,7 +97,7 @@
               </span>
             </el-dialog>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
     </div>
     <!-- 分页 @current-change='changePage' -->
