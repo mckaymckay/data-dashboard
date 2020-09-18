@@ -45,7 +45,9 @@
             property="address"
             label="质量改进">
             <template slot-scope="scope">
-              <span v-if="scope.row.PS_PROBLEM" style="color:#409EFF" @click="tofill(scope.row.FM_TABLEFIELD)">更改</span>
+              <span v-if="scope.row.PS_PROBLEM" style="color:#409EFF" @click="tofill(scope.row.FM_TABLEFIELD)">
+                <el-button type="primary" plain>更改</el-button>
+                </span>
             </template>
           </el-table-column>
         </el-table>

@@ -36,9 +36,20 @@
           </template>
         </el-table-column>
       <!-- 更新时间 -->
-        <el-table-column label="操作" width="300">
+        <el-table-column label="操作" width="200">
           <template slot-scope="scope">
-            <span style="margin-left: 10px;color:#409EFF" @click="tofill(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)">更改</span>
+            <span style="margin-left: 10px;color:#409EFF" @click="tofill(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)">
+              <el-button type="primary" plain>更改</el-button>
+              </span>
+          </template>
+        </el-table-column>
+        <!-- 备注 -->
+        <el-table-column label="是否更改完成" width="300">
+          <template slot-scope="">
+            <span style="margin-left: 10px;color:#409EFF">
+              <!-- <el-button type="primary" plain>已更改</el-button> -->
+              <el-button type="success" icon="el-icon-check" circle></el-button>
+              </span>
           </template>
         </el-table-column>
       </el-table>

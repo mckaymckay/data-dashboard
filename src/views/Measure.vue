@@ -26,11 +26,11 @@
             </el-select>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <!-- <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-upload" @click="submit(scope.$index)">提交</el-button>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
     </div>
     <!-- 操作 -->
@@ -84,26 +84,26 @@ export default {
   },
 
   methods: {
-    submit (index) {
-      console.log(this.measures[index])
-      var tableid = this.$route.params.tableid
-      // console.log('http://47.94.199.242:5000/api/v1.0/accuracy?tableid=' + tableid + '&missionname=' + this.tableData[index].FM_TABLEFIELD + '&description=' + this.measures[index])
-      axios
-        .put('http://47.94.199.242:5000/api/v1.0/measure?tableid=' + tableid + '&fieldname=' + this.tableData[index].FM_TABLEFIELD + '&fillkey=' + this.measures[index])
-        .then(res => {
-          console.log(res)
-          if (res.data.code === '200') {
-            console.log(res.data.message)
-            this.$alert('提交成功', '结果', {
-              confirmButtonText: '确定'
-              // callback: () => this.$router.push({ path: '/accuracy/' })
-            })
-          }
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    },
+    // submit (index) {
+    //   console.log(this.measures[index])
+    //   var tableid = this.$route.params.tableid
+    //   // console.log('http://47.94.199.242:5000/api/v1.0/accuracy?tableid=' + tableid + '&missionname=' + this.tableData[index].FM_TABLEFIELD + '&description=' + this.measures[index])
+    //   axios
+    //     .put('http://47.94.199.242:5000/api/v1.0/measure?tableid=' + tableid + '&fieldname=' + this.tableData[index].FM_TABLEFIELD + '&fillkey=' + this.measures[index])
+    //     .then(res => {
+    //       console.log(res)
+    //       if (res.data.code === '200') {
+    //         console.log(res.data.message)
+    //         this.$alert('提交成功', '结果', {
+    //           confirmButtonText: '确定'
+    //           // callback: () => this.$router.push({ path: '/accuracy/' })
+    //         })
+    //       }
+    //     })
+    //     .catch(err => {
+    //       console.log(err)
+    //     })
+    // },
     submit2 () {
       console.log(this.tableData)
       console.log(this.measures)

@@ -101,12 +101,6 @@ export default {
     }
   },
 
-  computed: {},
-
-  watch: {},
-
-  created () {},
-
   mounted () {
     this.handleCurrentChange(1)
   },
@@ -137,14 +131,19 @@ export default {
           .delete('http://47.94.199.242:5000/api/v1.0/jobs/' + jobid)
           .then(res => {
             console.log(res)
-            if (res.status === 200) {
+            if (res.data.code === '200') {
               this.$message({
                 type: 'success',
                 message: '删除成功!'
               })
-            }
-            this.handleCurrentChange(1)
+              this.handleCurrentChange(1)
             // location.reload()
+            } else if (res.data.code === '2003') {
+              this.$message({
+                type: 'info',
+                message: '任务正在执行,无法删除!'
+              })
+            }
           })
       }).catch(() => {
         this.$message({

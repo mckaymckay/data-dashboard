@@ -85,7 +85,7 @@ export default {
       axios
         .put('http://47.94.199.242:5000/api/v1.0/quality?tableid=' + this.tableid + '&fieldname=' + this.$route.params.fieldname + '&modifyvalue=' + this.modifyvalue)
         .then(res => {
-          if (res.status === 200) {
+          if (res.data.code === '200') {
             console.log(res)
             this.$alert('修改成功', '提示', {
               confirmButtonText: '确定',

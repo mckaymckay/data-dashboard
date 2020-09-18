@@ -42,14 +42,18 @@
         </el-table-column> -->
         <!-- 数据量 -->
         <el-table-column label="数据量" width="150">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px">{{ scope.row.TM_DBNAME }}</span>
+          <template slot-scope="">
+            <span style="margin-left: 10px">100k
+              <!-- {{ scope.row.TM_DBNAME }} -->
+              </span>
           </template>
         </el-table-column>
         <!-- 数据波动 -->
         <el-table-column label="数据波动" width="150">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px"><el-button type="text">{{ scope.row.TM_DBNAME }}</el-button></span>
+          <template slot-scope="">
+            <span style="margin-left: 10px"><el-button type="text">50%
+              <!-- {{ scope.row.TM_DBNAME }} -->
+              </el-button></span>
           </template>
         </el-table-column>
       <!-- 规则定义情况 -->
@@ -66,38 +70,28 @@
           </template>
           <!-- 检测任务执行情况 -->
         </el-table-column><el-table-column label="检测任务执行情况" width="150">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px"><el-button type="text">{{ scope.row.TM_DBNAME }}</el-button></span>
+          <template slot-scope="">
+            <span style="margin-left: 10px"><el-button type="text">60%已完成
+              <!-- {{ scope.row.TM_DBNAME }} -->
+              </el-button></span>
           </template>
         </el-table-column>
         <!-- 数据质量情况 -->
         <el-table-column label="数据质量情况" width="150">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px"><el-button type="text">{{ scope.row.TM_DBNAME }}</el-button></span>
+          <template slot-scope="">
+            <span style="margin-left: 10px"><el-button type="text">5个问题
+              <!-- {{ scope.row.TM_DBNAME }} -->
+              </el-button></span>
           </template>
         </el-table-column>
         <!-- 数据治理情况 -->
         <el-table-column label="数据治理情况" width="150">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px"><el-button type="text">{{ scope.row.TM_DBNAME }}</el-button></span>
+          <template slot-scope="">
+            <span style="margin-left: 10px"><el-button type="text">30%已改进
+              <!-- {{ scope.row.TM_DBNAME }} -->
+              </el-button></span>
           </template>
         </el-table-column>
-        <!-- 操作  -->
-        <!-- <el-table-column label="操作*">
-          <template slot-scope="scope">
-            <el-button size="mini" type="text" @click="todetails(scope.row.TM_ID,scope.row.TM_TABLENAME)">详情</el-button>
-            <el-dialog
-              title="提示"
-              :visible.sync="dialogVisible"
-              width="30%">
-              <span>将删除这个表所有的度量规则，回到默认状态，即'无需检测'，您确认要重置规则吗？</span>
-                <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-              </span>
-            </el-dialog>
-          </template>
-        </el-table-column> -->
       </el-table>
     </div>
     <!-- 分页 @current-change='changePage' -->

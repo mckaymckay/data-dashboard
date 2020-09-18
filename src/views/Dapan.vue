@@ -69,16 +69,17 @@
       </div> -->
     </div>
     <div class="body flex container">
-      <div class="flex-0 data-task">
+      <div class="flex-1 data-task">
         <!-- <div class="title" style="color:#303133">数据任务</div> -->
         <div class="instance-status_monitor">
           <div class="table-title">实例状态监控</div>
-          <el-table :data="tableData2" stripe>
-            <el-table-column prop="type" label="检测类型"></el-table-column>
-            <el-table-column prop="total" label="总数"></el-table-column>
-            <el-table-column prop="success" label="成功"></el-table-column>
-            <el-table-column prop="fail" label="失败"></el-table-column>
-            <el-table-column prop="end" label="终止"></el-table-column>
+          <!-- <template> -->
+          <el-table :data="tableData2" height="180px">
+            <el-table-column label="检测类型">完整性检测</el-table-column>
+            <!-- <el-table-column prop="total" label="总数"></el-table-column> -->
+            <el-table-column label="执行时间">2020-09-24 00:00:00</el-table-column>
+            <el-table-column label="执行状态"><el-button type="info" >未执行</el-button></el-table-column>
+            <!-- <el-table-column prop="end" label="终止"></el-table-column> -->
           </el-table>
         </div>
       </div>

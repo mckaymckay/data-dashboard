@@ -43,18 +43,6 @@
         </el-form-item>
       </el-form>
     </div>
-    <!-- <template>
-      <el-button type="text" @click="open">点击打开 Message Box</el-button>
-    </template>-->
-    <!-- 操作 -->
-    <!-- <div class="pagination_parent">
-      <div class="pagination">
-        <el-button-group>
-          <el-button type="primary" icon="el-icon-arrow-left" @click="back">返回</el-button>
-          <el-button type="primary" @click="toperfection()">详细  <i class="el-icon-arrow-right"></i></el-button>
-        </el-button-group>
-      </div>
-    </div>-->
   </div>
 </template>
 <script>
@@ -115,14 +103,6 @@ export default {
       console.log(this.job_name)
       console.log(this.job_description)
       console.log(this.tables)
-      // this.$refs.ruleForm.name((valid) => {
-      //   if (valid) {
-      //     alert('submit!')
-      //   } else {
-      //     console.log('error submit!!')
-      //     return false
-      //   }
-      // })
       if (!this.job_name) {
         alert('请输入任务名称')
         return false
@@ -153,18 +133,6 @@ export default {
         //   console.error()
         // })
     }
-    // open () {
-    //   this.$alert('提交成功', '结果', {
-    //     confirmButtonText: '确定'
-    // callback: action => {
-    //   console.log(this.$message)
-    //   this.$message({
-    //     type: 'info',
-    //     message: `action: ${action}`
-    //   })
-    // }
-    //   })
-    // }
   }
 }
 </script>

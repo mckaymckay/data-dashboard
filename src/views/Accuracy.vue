@@ -132,7 +132,7 @@ export default {
             } else if (res.data.code === '2003') {
               this.$message({
                 type: 'info',
-                message: '任务在执行中,不能删除!'
+                message: '任务正在执行,无法删除!'
               })
             }
           })
