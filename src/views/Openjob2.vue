@@ -80,18 +80,13 @@ export default {
   },
   methods: {
     back () {
-      this.$router.push({ path: '/accuracy/' })
+      this.$router.push({ path: '/job/' })
     },
     add () {
       this.timeList.push({ id: this.$route.params.tableid, value: '' })
     },
     submit () {
       console.log(this.timeList)
-      // const arr = JSON.parse(JSON.stringify(this.timeList.map((v) => ({
-      //   table_id: v.id,
-      //   time: v.value
-      // }))))
-
       const result = {
         table_id: this.timeList[0].id,
         time: this.timeList.map(v => ({

@@ -57,7 +57,7 @@
       <div class="pagination">
         <el-button-group>
           <el-button type="primary" icon="el-icon-arrow-left" @click="back">返回</el-button>
-          <el-button type="primary" @click="toperfection()">详细  <i class="el-icon-arrow-right"></i></el-button>
+          <!-- <el-button type="primary" @click="toperfection()">详细  <i class="el-icon-arrow-right"></i></el-button> -->
         </el-button-group>
       </div>
     </div>
@@ -71,22 +71,6 @@ export default {
     return {
       tableData: [],
       table_name: '',
-      options: [{
-        value: '选项1',
-        label: '无需检测'
-      }, {
-        value: '选项2',
-        label: '标准化检查'
-      }, {
-        value: '选项3',
-        label: '完整性检查'
-      }, {
-        value: '选项4',
-        label: '标准化检查'
-      }, {
-        value: '选项5',
-        label: '奇异值检查'
-      }],
       value: '',
       currentRow: null
     }
@@ -98,7 +82,7 @@ export default {
     console.log(this.$route.params.tableid)
     axios
       // .get('http://localhost:38080/api/v1/metadata/hive/dbs/tables')
-      .get('http://47.94.199.242:5000/api/v1.0/assets/' + tableid + '?page=1&size=10')
+      .get('http://47.94.199.242:5000/api/v1.0/assets/' + tableid + '?page=1&size=50')
       .then(res => {
         console.log('zheshi details')
         console.log(res.data.data)
@@ -110,7 +94,8 @@ export default {
       return dayjs(e)
     },
     back () {
-      this.$router.push({ path: '/Assets' })
+      // this.$router.push({ path: '/Assets' })
+      this.$router.back()
     },
     tofill (fieldname) {
       this.$router.push({ path: '/fill/' + this.$route.params.tableid + '/' + this.$route.params.tablename + '/' + fieldname })

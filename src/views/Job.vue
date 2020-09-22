@@ -37,11 +37,6 @@
                 <el-button  type="text">{{scope.row.JS_TABLEFIELD}}</el-button>
               </template>
             </el-table-column>
-            <el-table-column prop="time" label="上次执行时间" width="200">
-              <template slot-scope="scope">
-                {{ scope.row["JS_LASTEXECUTIONTIME"]}}
-              </template>
-            </el-table-column>
             <el-table-column prop="time" label="下次执行时间" width="200">
               <template slot-scope="scope">
                 {{ scope.row["JS_NEXTEXECUTIONTIME"]}}
@@ -57,7 +52,7 @@
             </el-table-column>
             <el-table-column label="操作" width="200">
               <el-button-group slot-scope="scope" >
-                <el-button type="primary" icon="el-icon-view"></el-button>
+                <el-button type="primary" icon="el-icon-view" @click="chakan(scope.row.JS_TABLEID,scope.row.JS_TABLENAME)"></el-button>
                 <el-button type="primary" icon="el-icon-delete" @click="deletejob(scope.row.JS_ID)"></el-button>
                 <el-button v-if="scope.row['JS_STATUS']==='执行中'" type="primary" @click="redefine(scope.row.JS_TABLEID)" icon="el-icon-video-pause"></el-button>
                 <el-button v-else-if="scope.row['JS_STATUS']==='暂停'" type="primary" @click="openjob(scope.row.JS_TABLEID)" icon="el-icon-video-play"></el-button>
@@ -88,23 +83,29 @@
 import axios from 'axios'
 import dayjs from 'dayjs'
 export default {
-
   data () {
     return {
       input1: '',
       select: '',
       selected: [],
       tableData: [],
+      table_name: '',
       page: 1,
       total: 0,
       limit: 10
     }
   },
-
   mounted () {
-    this.handleCurrentChange(1)
+    // this.handleCurrentChange(1)
+    console.log(this.$route.params)
+    // this.handleCurrentChange(1)
+    // this.fromassets()
+    if (this.$route.params.tablename === undefined) {
+      this.handleCurrentChange(1)
+    } else {
+      this.fromassets()
+    }
   },
-
   methods: {
     dayjs (e) {
       return dayjs(e)
@@ -119,6 +120,22 @@ export default {
           this.tableData = res.data.data
           this.total = res.data.pages * this.limit
         })
+    },
+    // 从数据实体页而来
+    fromassets () {
+      this.table_name = this.$route.params.tablename
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/searchjob?tablename=' + this.table_name)
+        .then(res => {
+          console.log(res)
+          this.tableData = res.data.data
+        })
+    },
+    // 查看任务
+    chakan (tableid, tablename) {
+      console.log('todetails')
+      this.$router.push({ path: '/details/' + tableid + '/' + tablename })
+      // console.log(tableid)
     },
     // 删除任务
     deletejob (jobid) {

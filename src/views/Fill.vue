@@ -2,7 +2,9 @@
   <div class="fill">
     <!-- 页面标识 -->
     <div class="pages">
-      <div class="h3">数据实体/详情/质量改进</div>
+        <span class="h3">质量评估</span>
+          <el-divider direction="vertical"></el-divider>
+        <span class="h3">质量改进</span>
       <div>
         <span class="span_size">{{tablename}}</span>
       </div>

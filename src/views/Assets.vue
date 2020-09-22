@@ -70,16 +70,16 @@
           </template>
           <!-- 检测任务执行情况 -->
         </el-table-column><el-table-column label="检测任务执行情况" width="150">
-          <template slot-scope="">
-            <span style="margin-left: 10px"><el-button type="text">60%已完成
+          <template slot-scope="scope">
+            <span style="margin-left: 10px"><el-button type="text" @click="tojob(scope.row.TM_TABLENAME)">60%已完成
               <!-- {{ scope.row.TM_DBNAME }} -->
               </el-button></span>
           </template>
         </el-table-column>
         <!-- 数据质量情况 -->
         <el-table-column label="数据质量情况" width="150">
-          <template slot-scope="">
-            <span style="margin-left: 10px"><el-button type="text">5个问题
+          <template slot-scope="scope">
+            <span style="margin-left: 10px"><el-button type="text" @click="toassessment(scope.row.TM_TABLENAME)">5个问题
               <!-- {{ scope.row.TM_DBNAME }} -->
               </el-button></span>
           </template>
@@ -128,17 +128,8 @@ export default {
   },
   // 开始执行分页函数
   mounted () {
-    // this.handleCurrentChange(1)
-    axios
-      .get('http://47.94.199.242:5000/api/v1.0/assets?page=1&size=10')
-      .then(res => {
-        console.log('zheshi assets')
-        console.log(res)
-        this.tableData = res.data.data
-        this.total = res.data.pages * this.limit
-      })
+    this.handleCurrentChange(1)
   },
-
   methods: {
     dayjs (e) {
       return dayjs(e)
@@ -148,17 +139,24 @@ export default {
       this.$router.push({ path: '/details/' + tableid + '/' + tablename })
       console.log(tableid)
     },
-    // tomeasure (tableid, tablename) {
-    //   console.log('to measure')
-    //   this.$router.push({ path: '/measure/' + tableid + '/' + tablename })
-    // },
-    // reset (tableid) {
-    //   axios
-    //     .delete('http://47.94.199.242:5000/api/v1.0/measure/{table_id}')
-    //     .then(res => {
-    //       console.log(res)
-    //     })
-    // },
+    // 根据表名查找任务列表
+    tojob (tablename) {
+      this.$router.push({
+        name: 'Job',
+        params: {
+          tablename: tablename
+        }
+      })
+    },
+    // 根据表名查找检测结果
+    toassessment (tablename) {
+      this.$router.push({
+        name: 'Assessment',
+        params: {
+          tablename: tablename
+        }
+      })
+    },
     // 分页
     handleCurrentChange (val) {
       // console.log(`当前页: ${val}`)

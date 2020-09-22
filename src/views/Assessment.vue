@@ -82,6 +82,7 @@ export default {
       input1: '',
       select: '',
       tableData: [],
+      table_name: '',
       page: 1,
       total: 0,
       limit: 10
@@ -90,17 +91,27 @@ export default {
 
   mounted () {
     this.handleCurrentChange(1)
+    console.log(this.$route.params.tablename)
+    if (this.$route.params.tablename === undefined) {
+      this.handleCurrentChange(1)
+    } else {
+      this.fromassets()
+    }
   },
-
   methods: {
-    handleEdit (index, row) {
-      console.log(index, row)
-    },
-    handleDelete (index, row) {
-      console.log(index, row)
-    },
     tofill (tableid, tablename, fieldname) {
       this.$router.push({ path: '/fill/' + tableid + '/' + tablename + '/' + fieldname })
+    },
+    // 从数据实体而来
+    fromassets () {
+      this.table_name = this.$route.params.tablename
+      console.log(this.table_name)
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/searchresult?tablename=' + this.table_name)
+        .then(res => {
+          console.log(res)
+          this.tableData = res.data.data
+        })
     },
     // 分页
     handleCurrentChange (val) {

@@ -35,11 +35,11 @@
           </template>
         </el-table-column>
       <!-- 更新时间 -->
-        <el-table-column label="更新时间" width="200">
+        <!-- <el-table-column label="更新时间" width="200">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{scope.row.TM_UPDATETIME}}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       <!-- 规则定义情况 -->
         <el-table-column label="规则定义情况" width="200">
           <template slot-scope="scope">
@@ -119,7 +119,7 @@ export default {
     // 重置
     reset (tableid) {
       console.log(tableid)
-      this.$confirm("此操作将删除该表所有的度量规则，回到默认状态，即'无需检测'，您确认要重置规则吗？", '提示', {
+      this.$confirm("此操作将删除该表所有的度量规则,回到默认状态,即'无需检测';相应的检测任务也会删除,您确认要重置规则吗？", '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

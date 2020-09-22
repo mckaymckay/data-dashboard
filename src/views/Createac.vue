@@ -2,7 +2,9 @@
   <div class="createac">
     <!-- 页面标识 -->
     <div class="pages">
-      <div class="h3">波动检测/新建</div>
+      <span class="h3">波动检测</span>
+        <el-divider direction="vertical"></el-divider>
+      <span class="h3">新建</span>
       <div>
         <span class="span_size">新建波动检测</span>
       </div>
