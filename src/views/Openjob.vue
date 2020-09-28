@@ -2,7 +2,10 @@
   <div class="openjob">
     <!-- 页面标识 -->
     <div class="pages">
-      <div class="h3">波动检测</div>
+      <div class="lll">
+        <!-- <div><el-page-header @back="goBack"></el-page-header></div> -->
+        <div class="h3">波动检测</div>
+      </div>
       <div>
         <span class="span_size">执行波动检测任务</span>
       </div>
@@ -16,7 +19,7 @@
         </div>
         <template>
           <div class="block" v-for="(item,index) in timeList" :key="index">
-            <span>第{{index+1}}个</span>
+            <span style="margin-right:12px">{{index+1}}</span>
             <el-date-picker
               v-model="item.value"
               type="datetime"
@@ -24,7 +27,6 @@
               placeholder="选择日期时间"
               :picker-options="pickerOptions"
             >
-              {{opentime1}}
             </el-date-picker>
             <el-button @click="add" v-if="index===timeList.length-1&&index<5">
               <i class="el-icon-plus"></i>
@@ -34,7 +36,7 @@
       </div>
       <div class="content2">
         <el-form label-width="300px" class="demo-ruleForm">
-          <el-form-item>
+          <el-form-item style="margin-left: 50px;">
             <el-button type="primary" @click="submit">提交</el-button>
             <el-button @click="back">返回</el-button>
           </el-form-item>
@@ -45,6 +47,7 @@
 </template>
 <script>
 import axios from 'axios'
+import day from 'dayjs'
 export default {
   data () {
     return {
@@ -57,15 +60,9 @@ export default {
           }
         ],
         disabledDate (time) {
-          // 此条为设置禁止用户选择今天之前的日期，包含今天。
-          // return time.getTime() <= (Date.now() - (24 * 60 * 60 * 1000))
-          // 此条为设置禁止用户选择今天之前的日期，不包含今天。
-          //   console.log(Date.now())
           return time.getTime() <= Date.now()
         }
       },
-      value1: '',
-      opentime1: null,
       timeList: [
         {
           id: '',
@@ -77,14 +74,36 @@ export default {
   mounted () {
     console.log(this.$route.params)
     this.timeList[0].id = this.$route.params.tableid
+    this.add()
+    this.gettime()
+    this.timer = setInterval(this.gettime, 4.5 * 60 * 1000)
   },
   methods: {
+    // 可选6个时间
+    add () {
+      for (let i = 0; i < 5; i++) {
+        this.timeList.push({ id: this.$route.params.tableid, value: '' })
+      }
+    },
+    // 获取6个时间
+    gettime () {
+      const result = []
+      var dd = new Date()
+      result.push(day(dd).add(5, 'minute').format('YYYY-MM-DD HH:mm:ss'))
+      this.timeList[0].value = result[0]
+      for (let i = 1; i < 6; i++) {
+        result.push(day(dd).add(i, 'month').format('YYYY-MM-DD HH:mm:ss'))
+        this.timeList[i].value = result[i]
+      }
+      console.log(result)
+    },
+    goBack () {
+      this.$router.push({ path: '/accuracy/' })
+    },
     back () {
       this.$router.push({ path: '/accuracy/' })
     },
-    add () {
-      this.timeList.push({ id: this.$route.params.tableid, value: '' })
-    },
+
     submit () {
       console.log(this.timeList)
       const arr = JSON.parse(JSON.stringify(this.timeList.map((v) => ({
@@ -163,11 +182,15 @@ export default {
   margin-top: 5px;
   color: #606266;
 }
+.lll{
+  display: flex;
+}
 .h3 {
   font-size: 14px;
   font-weight: bold;
   margin-bottom: 8px;
   color: #909399;
+  line-height: 24px;
 }
 .span_size {
   font-size: 20px;
@@ -182,10 +205,5 @@ export default {
   border-radius: 4px;
   width: 305px;
   margin: 5px auto;
-}
-</style>
-<style>
-.el-picker-panel__footer>button:first-child{
-  display: none;
 }
 </style>

@@ -2,9 +2,12 @@
   <div class="measure">
     <!-- 页面标识 -->
     <div class="pages">
+      <div class="lll">
+        <div><el-page-header @back="goBack"></el-page-header></div>
         <span class="h3">数据实体</span>
           <el-divider direction="vertical"></el-divider>
         <span class="h3">规则定义</span>
+      </div>
       <div>
         <span class="span_size">{{table_name}}</span>
       </div>
@@ -35,7 +38,7 @@
       <div class="pagination">
         <el-button-group>
           <el-button type="primary" icon="el-icon-upload" @click="tijiao">提交</el-button>
-          <el-button type="primary" icon="el-icon-arrow-left" @click="back">返回</el-button>
+          <!-- <el-button type="primary" icon="el-icon-arrow-left" @click="back">返回</el-button> -->
         </el-button-group>
       </div>
     </div>
@@ -93,13 +96,14 @@ export default {
         console.log('zheshi measurelist')
         // console.log(res.data.data)
         this.options = res.data.data
-        console.log(this.options)
+        // console.log(this.options)
       })
   },
 
   methods: {
     tijiao () {
       this.dialogFormVisible = true
+      this.form.missionname = this.$route.params.tablename + '_实体检测任务'
     },
     quding () {
       if (this.form.missionname.length !== 0) {
@@ -112,8 +116,9 @@ export default {
       }
     },
     submit () {
-      console.log(this.tableData)
-      console.log(this.measures)
+      // console.log(this.tableData)
+      // console.log(this.measures)
+      // console.log(this.form.missionname)
       const result = {
         JS_JOBNAME: this.form.missionname,
         JS_TABLENAME: this.$route.params.tablename,
@@ -124,7 +129,6 @@ export default {
           }
         }).filter(v => v.MS_MEASURE !== '无需检测')
       }
-      console.log(result.data.length)
       if (result.data.length !== 0) {
         axios({
           url: 'http://47.94.199.242:5000/api/v1.0/measure',
@@ -152,9 +156,8 @@ export default {
         // this.dialogFormVisible = false
       }
     },
-    back () {
-      console.log('back')
-      this.$router.push({ path: '/measure1/' })
+    goBack () {
+      this.$router.back()
     }
   }
 }
@@ -170,11 +173,15 @@ export default {
   margin-bottom: 10px;
   height: 90px;
 }
+.lll{
+  display:flex
+}
 .h3 {
   font-size: 14px;
   font-weight: bold;
   margin-bottom: 8px;
   color: #909399;
+  line-height: 24px;
 }
 .span_size {
   font-size: 20px;

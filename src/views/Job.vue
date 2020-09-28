@@ -2,14 +2,41 @@
   <div class="job">
     <!-- 页面标识 -->
     <div class="pages">
-      <div class="h3">检测任务/</div>
-      <div>
-        <span class="span_size">任务列表</span>
+      <div class="lll">
+        <div>
+          <el-page-header @back="goBack"></el-page-header>
+        </div>
+        <div class="h3">检测任务</div>
       </div>
-      <div class="parent">
+
+      <div class="search_button">
+        <!-- <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">{{searchname}} -->
+          <!-- <el-button type="primary" slot="append" icon="el-icon-search" @click="search">搜索</el-button> -->
+        <!-- </el-input> -->
+          <template>
+              <el-select
+                v-model="value"
+                filterable
+                clearable
+                size="5px"
+                style="width:400px"
+                allow-create
+                default-first-option
+                placeholder="请选择表或主题库">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+        </template>
+        <el-button slot="append" icon="el-icon-search" @click="search" style="background-color:">搜索</el-button>
+      </div>
+      <!-- <div class="parent">
         <el-button type="success" icon="el-icon-open" round>开始</el-button>
         <el-button type="warning" icon="el-icon-turn-off" round>暂停</el-button>
-      </div>
+      </div> -->
     </div>
     <!-- 表格 -->
     <div class="content">
@@ -20,16 +47,21 @@
         style="width: 100%"
         height="500px"
         @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="55">
+            <el-table-column type="" width="20">
             </el-table-column>
             <el-table-column  label="任务名称" width="300">
               <template slot-scope="scope">
                 <el-button  type="text" @click="tosuccessJob(scope.row.JS_ID)">{{ scope.row["JS_JOBNAME"] }}</el-button>
               </template>
             </el-table-column>
-             <el-table-column label="表名" width="150">
+             <el-table-column label="表名" width="200">
               <template slot-scope="scope">
                 <el-button  type="text">{{scope.row.JS_TABLENAME}}</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column label="规则定义" width="150">
+              <template slot-scope="scope">
+                <el-button  type="text">{{scope.row.JS_MEASURE}}</el-button>
               </template>
             </el-table-column>
             <el-table-column label="字段名称" width="150">
@@ -44,24 +76,26 @@
             </el-table-column>
             <el-table-column prop="status" label="状态" width="150">
               <template slot-scope="scope">
-                <el-button v-if="scope.row['JS_STATUS']==='暂停'" type="danger" >暂停</el-button>
-                <el-button v-if="scope.row['JS_STATUS']==='已完成'" type="success" >完成</el-button>
-                <el-button v-else-if="scope.row['JS_STATUS']==='执行中'" type="success" >执行</el-button>
+                <el-button size="small" v-if="scope.row['JS_STATUS']==='暂停'" type="danger" >未开启</el-button>
+                <el-button size="small" v-if="scope.row['JS_STATUS']==='已完成'" type="success" >已完成</el-button>
+                <el-button size="small" v-else-if="scope.row['JS_STATUS']==='等待下次执行'" type="warning" >待执行</el-button>
                  <!-- <el-button type="danger" plain="">暂停</el-button> -->
               </template>
             </el-table-column>
             <el-table-column label="操作" width="200">
               <el-button-group slot-scope="scope" >
-                <el-button type="primary" icon="el-icon-view" @click="chakan(scope.row.JS_TABLEID,scope.row.JS_TABLENAME)"></el-button>
-                <el-button type="primary" icon="el-icon-delete" @click="deletejob(scope.row.JS_ID)"></el-button>
-                <el-button v-if="scope.row['JS_STATUS']==='执行中'" type="primary" @click="redefine(scope.row.JS_TABLEID)" icon="el-icon-video-pause"></el-button>
-                <el-button v-else-if="scope.row['JS_STATUS']==='暂停'" type="primary" @click="openjob(scope.row.JS_TABLEID)" icon="el-icon-video-play"></el-button>
-                <el-button v-else-if="scope.row['JS_STATUS']==='已完成'" type="primary" @click="openjob(scope.row.JS_TABLEID)" icon="el-icon-video-play"></el-button>
+                <el-button size="small" type="primary" icon="el-icon-view" @click="chakan(scope.row.JS_TABLEID,scope.row.JS_TABLENAME)"></el-button>
+                <el-button size="small" type="primary" icon="el-icon-delete" @click="deletejob(scope.row.JS_ID)"></el-button>
+                <el-button size="small" v-if="scope.row['JS_STATUS']==='暂停'" type="primary" icon="el-icon-video-play"></el-button>
+                <el-button size="small" v-else-if="scope.row['JS_STATUS']==='等待下次执行'" type="primary" @click="openjob(scope.row.JS_TABLEID)" icon="el-icon-video-play"></el-button>
+                <el-button size="small" v-else-if="scope.row['JS_STATUS']==='已完成'" type="primary" @click="openjob(scope.row.JS_TABLEID)" icon="el-icon-video-play"></el-button>
 
               </el-button-group>
             </el-table-column>
             <el-table-column label="结果">
-              <el-button type="success" icon="el-icon-s-data" circle></el-button>
+              <template slot-scope="scope">
+              <el-button size="small" type="success" icon="el-icon-s-data" circle @click="toresjob(scope.row.JS_JOBNAME,scope.row.JS_ID)"></el-button>
+              </template>
             </el-table-column>
       </el-table>
     </div>
@@ -92,14 +126,22 @@ export default {
       table_name: '',
       page: 1,
       total: 0,
-      limit: 10
+      limit: 10,
+      options: [{
+        value: 'HTML',
+        label: 'HTML'
+      }, {
+        value: 'CSS',
+        label: 'CSS'
+      }, {
+        value: 'JavaScript',
+        label: 'JavaScript'
+      }],
+      value: []
     }
   },
   mounted () {
-    // this.handleCurrentChange(1)
     console.log(this.$route.params)
-    // this.handleCurrentChange(1)
-    // this.fromassets()
     if (this.$route.params.tablename === undefined) {
       this.handleCurrentChange(1)
     } else {
@@ -107,6 +149,16 @@ export default {
     }
   },
   methods: {
+    // 搜索框根据表名搜索
+    search () {
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/searchjob?tablename=' + this.value)
+        .then(res => {
+          console.log('zheshi sousuo')
+          console.log(res)
+          this.tableData = res.data.data
+        })
+    },
     dayjs (e) {
       return dayjs(e)
     },
@@ -177,11 +229,9 @@ export default {
       // console.log(jobid)
       this.$router.push({ path: '/successjob/' + jobid })
     },
-    redefine (jobid) {
-      this.$alert('修改任务状态', '结果', {
-        confirmButtonText: '确定'
-        // callback: () => this.$router.push({ path: '/accuracy/' })
-      })
+    toresjob (jobname, jobid) {
+      console.log(jobname, jobid)
+      this.$router.push({ path: '/resjob/' + jobname + '/' + jobid })
     },
     handleSelectionChange (rows) {
       this.multipleSelection = rows
@@ -193,6 +243,9 @@ export default {
         )
         console.log(this.selected)
       }
+    },
+    goBack () {
+      this.$router.back()
     }
   }
 }
@@ -208,11 +261,15 @@ export default {
   margin-bottom: 10px;
   height: 90px;
 }
+.lll{
+display: flex;
+}
 .h3 {
   font-size: 14px;
   font-weight: bold;
   margin-bottom: 8px;
   color:#909399;
+  line-height: 24px;
 }
 .parent {
   text-align: right;

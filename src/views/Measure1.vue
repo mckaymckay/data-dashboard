@@ -3,21 +3,42 @@
     <!-- 页面标识 -->
     <div class="pages">
       <div class="h3">规则定义</div>
-      <div>
+      <!-- <div>
         <span class="span_size">数据列表</span>
-      </div>
+      </div> -->
       <div class="search_button">
-        <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">{{searchname}}
+        <!-- <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">{{searchname}}
           <el-button slot="append" icon="el-icon-search" @click="search">搜索</el-button>
-        </el-input>
+        </el-input> -->
+        <template>
+          <el-select
+            v-model="value"
+            filterable
+            clearable
+            size="5px"
+            style="width:400px"
+            allow-create
+            default-first-option
+            placeholder="请选择表或主题库">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </template>
+        <el-button slot="append" icon="el-icon-search" @click="search" style="background-color:">搜索</el-button>
       </div>
     </div>
     <!-- 表格 -->
     <div class="content">
       <el-table
       :data="tableData" style="width: 100%" height="500px">
+      <el-table-column type="" width="20">
+      </el-table-column>
       <!-- 数据表 -->
-        <el-table-column label="数据表" width="150">
+        <el-table-column label="数据表" width="250">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.TM_TABLENAME }}</span>
           </template>
@@ -34,12 +55,6 @@
             <span style="margin-left: 10px">{{scope.row.TM_CREATETIME}}</span>
           </template>
         </el-table-column>
-      <!-- 更新时间 -->
-        <!-- <el-table-column label="更新时间" width="200">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px">{{scope.row.TM_UPDATETIME}}</span>
-          </template>
-        </el-table-column> -->
       <!-- 规则定义情况 -->
         <el-table-column label="规则定义情况" width="200">
           <template slot-scope="scope">
@@ -99,7 +114,18 @@ export default {
       tableData: [],
       page: 1,
       total: 0,
-      limit: 10
+      limit: 10,
+      options: [{
+        value: 'HTML',
+        label: 'HTML'
+      }, {
+        value: 'CSS',
+        label: 'CSS'
+      }, {
+        value: 'JavaScript',
+        label: 'JavaScript'
+      }],
+      value: []
     }
   },
   // 开始执行分页函数

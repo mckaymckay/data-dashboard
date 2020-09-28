@@ -3,19 +3,37 @@
     <!-- 页面标识 -->
     <div class="pages">
       <div class="h3">数据实体</div>
-      <div>
-        <span class="span_size">数据列表</span>
-      </div>
       <div class="search_button">
-        <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">{{searchname}}
-          <el-button type="primary" slot="append" icon="el-icon-search" @click="search">搜索</el-button>
-        </el-input>
+        <!-- <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">{{searchname}} -->
+          <!-- <el-button type="primary" slot="append" icon="el-icon-search" @click="search">搜索</el-button> -->
+        <!-- </el-input> -->
+        <template>
+          <el-select
+            v-model="value"
+            filterable
+            clearable
+            size="5px"
+            style="width:400px"
+            allow-create
+            default-first-option
+            placeholder="请选择表或主题库">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </template>
+        <el-button slot="append" icon="el-icon-search" @click="search" style="background-color:">搜索</el-button>
       </div>
     </div>
     <!-- 表格 -->
     <div class="content">
       <el-table
       :data="tableData" style="width: 100%" height="500px">
+      <el-table-column type="" width="20">
+      </el-table-column>
       <!-- 数据表 -->
         <el-table-column label="数据表" width="150">
           <template slot-scope="scope">
@@ -34,24 +52,10 @@
             <span style="margin-left: 10px">{{scope.row.TM_CREATETIME}}</span>
           </template>
         </el-table-column>
-      <!-- 更新时间 -->
-        <!-- <el-table-column label="更新时间" width="200">
-          <template slot-scope="scope">
-            <span style="margin-left: 10px">{{scope.row.TM_UPDATETIME}}</span>
-          </template>
-        </el-table-column> -->
-        <!-- 数据量 -->
-        <el-table-column label="数据量" width="150">
-          <template slot-scope="">
-            <span style="margin-left: 10px">100k
-              <!-- {{ scope.row.TM_DBNAME }} -->
-              </span>
-          </template>
-        </el-table-column>
         <!-- 数据波动 -->
         <el-table-column label="数据波动" width="150">
-          <template slot-scope="">
-            <span style="margin-left: 10px"><el-button type="text">50%
+          <template slot-scope="scope">
+            <span style="margin-left: 10px" @click="toaccuracy(scope.row.TM_TABLENAME)"><el-button type="text">50%
               <!-- {{ scope.row.TM_DBNAME }} -->
               </el-button></span>
           </template>
@@ -86,8 +90,8 @@
         </el-table-column>
         <!-- 数据治理情况 -->
         <el-table-column label="数据治理情况" width="150">
-          <template slot-scope="">
-            <span style="margin-left: 10px"><el-button type="text">30%已改进
+          <template slot-scope="scope">
+            <span style="margin-left: 10px"><el-button type="text" @click="toassessment(scope.row.TM_TABLENAME)">30%已改进
               <!-- {{ scope.row.TM_DBNAME }} -->
               </el-button></span>
           </template>
@@ -123,7 +127,18 @@ export default {
       tableData: [],
       page: 1,
       total: 0,
-      limit: 10
+      limit: 10,
+      options: [{
+        value: 'HTML',
+        label: 'HTML'
+      }, {
+        value: 'CSS',
+        label: 'CSS'
+      }, {
+        value: 'JavaScript',
+        label: 'JavaScript'
+      }],
+      value: []
     }
   },
   // 开始执行分页函数
@@ -136,8 +151,17 @@ export default {
     },
     todetails (tableid, tablename) {
       console.log('todetails')
-      this.$router.push({ path: '/details/' + tableid + '/' + tablename })
+      this.$router.push({ path: '/measure/' + tableid + '/' + tablename })
       console.log(tableid)
+    },
+    // 根据表名查找波动检测
+    toaccuracy (tablename) {
+      this.$router.push({
+        name: 'Accuracy',
+        params: {
+          tablename: tablename
+        }
+      })
     },
     // 根据表名查找任务列表
     tojob (tablename) {
@@ -152,7 +176,7 @@ export default {
     toassessment (tablename) {
       this.$router.push({
         name: 'Assessment',
-        params: {
+        query: {
           tablename: tablename
         }
       })
@@ -169,8 +193,9 @@ export default {
           this.total = res.data.pages * this.limit
         })
     },
+    // 根据表名搜索
     search () {
-      this.searchname = this.input1
+      this.searchname = this.value
       console.log(this.searchname)
       axios
         .get('http://47.94.199.242:5000/api/v1.0/search?tablename=' + this.searchname)
@@ -209,8 +234,8 @@ export default {
   max-width:500px;
   margin:0 auto
 }
-.el-select .el-input {
-    width: 130px;
+.el-select>.el-input {
+    width: 400px;
 }
 .input-with-select .el-input-group__prepend {
     background-color: #fff;

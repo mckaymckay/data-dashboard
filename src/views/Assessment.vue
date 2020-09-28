@@ -2,15 +2,38 @@
   <div class="assessment">
     <!-- 页面标识 -->
     <div class="pages">
-      <div class="h3">质量评估</div>
-      <div>
-        <span class="span_size">检测结果</span>
+      <div class="lll">
+        <div>
+          <el-page-header @back="goBack"></el-page-header>
+          <!-- <span class="span_size">检测结果</span> -->
+        </div>
+        <!-- <el-page-header @back="goBack" content="质量评估"></el-page-header> -->
+        <div class="h3">质量评估</div>
       </div>
+
       <div class="search_button">
-        <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">
-          <el-button slot="append" icon="el-icon-search">搜索</el-button>
-          <!-- style="background-color:#3894FF" -->
-        </el-input>
+        <!-- <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">{{searchname}}
+          <el-button slot="append" icon="el-icon-search" @click="search">搜索</el-button>
+        </el-input> -->
+        <template>
+          <el-select
+            v-model="value"
+            filterable
+            clearable
+            size="5px"
+            style="width:400px"
+            allow-create
+            default-first-option
+            placeholder="请选择表或主题库">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </template>
+        <el-button slot="append" icon="el-icon-search" @click="search" style="background-color:">搜索</el-button>
       </div>
     </div>
     <!-- 表格 -->
@@ -23,32 +46,32 @@
             <span style="margin-left: 10px">{{ scope.row.TM_TABLENAME }}</span>
           </template>
         </el-table-column>
-      <!-- 数据库 -->
+      <!-- 字段 -->
         <el-table-column label="字段" width="200">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.FM_TABLEFIELD }}</span>
           </template>
         </el-table-column>
-      <!-- 创建时间 -->
+      <!-- 问题描述 -->
         <el-table-column label="问题描述" width="300">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.PS_PROBLEM }}</span>
           </template>
         </el-table-column>
-      <!-- 更新时间 -->
+      <!-- 操作 -->
         <el-table-column label="操作" width="200">
           <template slot-scope="scope">
             <span style="margin-left: 10px;color:#409EFF" @click="tofill(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)">
-              <el-button type="primary" plain>更改</el-button>
+              <el-button size="small" type="primary" plain>更改</el-button>
               </span>
           </template>
         </el-table-column>
-        <!-- 备注 -->
+        <!-- 是否更改完成 -->
         <el-table-column label="是否更改完成" width="300">
           <template slot-scope="">
             <span style="margin-left: 10px;color:#409EFF">
               <!-- <el-button type="primary" plain>已更改</el-button> -->
-              <el-button type="success" icon="el-icon-check" circle></el-button>
+              <el-button size="small" type="success" icon="el-icon-check" circle></el-button>
               </span>
           </template>
         </el-table-column>
@@ -71,28 +94,31 @@
 <script>
 import axios from 'axios'
 export default {
-  props: {},
-
-  components: {},
-
-  mixins: [],
-
   data () {
     return {
-      input1: '',
       select: '',
       tableData: [],
       table_name: '',
       page: 1,
       total: 0,
-      limit: 10
+      limit: 10,
+      options: [{
+        value: 'HTML',
+        label: 'HTML'
+      }, {
+        value: 'CSS',
+        label: 'CSS'
+      }, {
+        value: 'JavaScript',
+        label: 'JavaScript'
+      }],
+      value: []
     }
   },
 
   mounted () {
-    this.handleCurrentChange(1)
-    console.log(this.$route.params.tablename)
-    if (this.$route.params.tablename === undefined) {
+    console.log(this.$route.query.tablename)
+    if (this.$route.query.tablename === undefined) {
       this.handleCurrentChange(1)
     } else {
       this.fromassets()
@@ -104,10 +130,19 @@ export default {
     },
     // 从数据实体而来
     fromassets () {
-      this.table_name = this.$route.params.tablename
+      this.table_name = this.$route.query.tablename
       console.log(this.table_name)
       axios
         .get('http://47.94.199.242:5000/api/v1.0/searchresult?tablename=' + this.table_name)
+        .then(res => {
+          console.log(res)
+          this.tableData = res.data.data
+        })
+    },
+    // 根据表名搜索
+    search () {
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/searchresult?tablename=' + this.value)
         .then(res => {
           console.log(res)
           this.tableData = res.data.data
@@ -124,6 +159,9 @@ export default {
           this.tableData = res.data.data
           this.total = res.data.counts
         })
+    },
+    goBack () {
+      this.$router.back()
     }
   }
 }
@@ -138,12 +176,17 @@ export default {
   background-color: white;
   margin-bottom: 10px;
   height: 90px;
+
+}
+.lll{
+  display: flex;
 }
 .h3 {
   font-size: 14px;
   font-weight: bold;
   margin-bottom: 8px;
   color:#909399;
+  line-height: 24px;
 }
 .span_size {
   font-size: 20px;

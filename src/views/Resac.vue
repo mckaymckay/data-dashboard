@@ -2,15 +2,18 @@
   <div class="resac">
     <!-- 页面标识 -->
     <div class="pages">
-      <!-- <div class="h3">波动检测/任务列表/任务结果</div> -->
+      <div class="lll">
+      <div><el-page-header @back="goBack"></el-page-header></div>
         <span class="h3">波动检测</span>
           <el-divider direction="vertical"></el-divider>
         <span class="h3">任务列表</span>
           <el-divider direction="vertical"></el-divider>
         <span class="h3">任务结果</span>
+      </div>
       <div>
         <span class="span_size">任务名称:&nbsp;&nbsp;&nbsp;&nbsp;{{missionname}}    </span>
       </div>
+
     </div>
     <!-- 折线图 -->
     <div class="content">
@@ -58,13 +61,13 @@
       </div>
     </div>
     <!-- 分页 -->
-    <div class="pagination_parent">
+    <!-- <div class="pagination_parent">
       <div class="pagination">
         <el-button-group>
           <el-button type="primary" icon="el-icon-arrow-left" @click="back">返回</el-button>
         </el-button-group>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -225,12 +228,10 @@ export default {
       this.seven_chart = this.echarts.init(document.getElementById('seven'))
       // 把配置和数据放这里
       this.seven_chart.setOption(this.seven_option)
+    },
+    goBack () {
+      this.$router.back()
     }
-    // beforeDestroy () {
-    //   if (!this.seven_chart) { return }
-    //   this.seven_chart.dispose()
-    //   this.seven_chart = null
-    // }
   }
 
 }
@@ -257,15 +258,19 @@ export default {
   height: 35%;
 }
 .table{
-  margin: 0px 10px;
-  background-color: red;
+  /* margin: 0px 10px; */
+  /* background-color: white; */
   height: 65%;
+}
+.lll{
+  display: flex;
 }
 .h3 {
   font-size: 14px;
   font-weight: bold;
   margin-bottom: 8px;
   color:#909399;
+  line-height: 24px;
 }
 .span_size {
   font-size: 20px;

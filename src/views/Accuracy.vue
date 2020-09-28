@@ -2,62 +2,112 @@
   <div class="accuracy">
     <!-- 页面标识 -->
     <div class="pages">
-      <div class="h3">波动检测</div>
-      <div>
-        <el-button type="primary" icon="el-icon-circle-plus-outline" @click="tomeasure">波动检测</el-button>
+      <div class="lll">
+        <div><el-page-header @back="goBack"></el-page-header></div>
+        <span class="h3">波动检测</span>
       </div>
       <div class="search_button">
+        <!-- <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">{{searchname}} -->
+          <!-- <el-button type="primary" slot="append" icon="el-icon-search" @click="search">搜索</el-button> -->
+        <!-- </el-input> -->
+        <template>
+          <el-select
+            v-model="value"
+            filterable
+            clearable
+            size="5px"
+            style="width:400px"
+            allow-create
+            default-first-option
+            placeholder="请选择表或主题库">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </template>
+        <el-button slot="append" icon="el-icon-search" @click="search" style="background-color:">搜索</el-button>
+      </div>
+      <!-- <div class="search_button">
         <el-alert
             type="success"
             description="例子：假设表A上次更新后有1000条数据，此次更新后有999条数据可以与之吻合，
 那么准确度(%)=999/1000 * 100% = 99.9%"
             show-icon>
         </el-alert>
-      </div>
+      </div> -->
     </div>
     <!-- 表格 -->
     <div class="content">
+      <div style="background-color:white;height:60px">
+        <span style="line-height: 60px;padding: 30px;color: #909399;font-size:small">任务列表></span>
+        <el-button type="primary" style="margin:10px 100px 0px;float:right" icon="el-icon-circle-plus-outline" @click="tomeasure">波动检测</el-button>
+      </div>
+      <div style="background-color:#E4E7ED;height:1px"></div>
       <el-table
       :data="tableData"
       tooltip-effect="dark"
       style="width: 100%"
-      height="500px"
+      height="440px"
       @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55">
+      <el-table-column type="" width="20">
       </el-table-column>
       <!-- 度量名称 -->
-        <el-table-column label="度量名称" width="250">
+        <el-table-column label="度量名称" min-width="20%">
           <template slot-scope="scope">
-            <span style="margin-left: 10px">{{ scope.row.FM_MISSIONNAME }}</span>
+            <span style="margin-left: 10px">
+              <el-button type="text"  @click="checkjob">{{ scope.row.FM_MISSIONNAME }}</el-button></span>
           </template>
         </el-table-column>
-      <!-- 度量类型 -->
-        <el-table-column label="度量类型" width="250">
-          <template slot-scope="">
-            <span style="margin-left: 10px">accuracy</span>
+        <!-- 数据表 -->
+        <el-table-column label="数据表" min-width="20%" >
+          <template slot-scope="scope">
+            <span style="margin-left: 10px">{{ scope.row.FM_TABLENAME}}</span>
           </template>
         </el-table-column>
       <!-- 描述 -->
-        <el-table-column label="描述" width="300">
+        <el-table-column label="描述" min-width="20%">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.FM_DESCRIPTION}}</span>
           </template>
         </el-table-column>
+        <!-- 下次执行时间 -->
+        <el-table-column prop="time" label="下次执行时间" min-width="20%">
+              <template slot-scope="scope">
+                {{ scope.row["FM_NEXTEXECUTIONTIME"]}}
+              </template>
+            </el-table-column>
+        <!-- 执行状态 -->
+        <el-table-column prop="status" label="状态" min-width="10%">
+              <template slot-scope="scope">
+                <el-button size="small" v-if="scope.row['FM_STATUS']==='暂停'" type="danger" >暂停</el-button>
+                <el-button size="small" v-if="scope.row['FM_STATUS']==='已完成'" type="success" >完成</el-button>
+                <el-button size="small" v-else-if="scope.row['FM_STATUS']==='执行中'" type="success" >执行</el-button>
+                 <!-- <el-button type="danger" plain="">暂停</el-button> -->
+              </template>
+            </el-table-column>
       <!-- 操作 -->
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" width="150px">
           <template slot-scope="scope">
             <el-button-group>
-            <el-button type="primary" icon="el-icon-view" @click="checkjob"></el-button>
-            <el-button type="primary" icon="el-icon-delete" @click="deletejob(scope.row.FM_ID)"></el-button>
-            <el-button v-if="scope.row['FM_STATUS']==='执行中'" type="primary" @click="redefine(scope.row.FM_ID)" icon="el-icon-video-pause"></el-button>
-            <el-button v-else-if="scope.row['FM_STATUS']==='暂停'" type="primary" @click="openjob(scope.row.FM_ID)" icon="el-icon-video-play"></el-button>
-            <el-button v-else-if="scope.row['FM_STATUS']==='已完成'" type="primary" @click="openjob(scope.row.FM_ID)" icon="el-icon-circle-check"></el-button>
+              <!-- <el-button type="primary" icon="el-icon-view" @click="checkjob"></el-button> -->
+              <el-button size="small" type="primary" icon="el-icon-delete" @click="deletejob(scope.row.FM_ID)"></el-button>
+              <el-tooltip class="item" effect="dark" content="添加即时任务" placement="top-start">
+                <el-button size="small" v-if="scope.row['FM_STATUS']==='执行中'" type="primary" @click="redefine(scope.row.FM_ID)" icon="el-icon-video-pause"></el-button>
+                <el-button size="small" v-else-if="scope.row['FM_STATUS']==='暂停'" type="primary" @click="dingshi(scope.row.FM_ID)" icon="el-icon-video-play"></el-button>
+                <el-button size="small" v-else-if="scope.row['FM_STATUS']==='已完成'" type="primary" @click="dingshi(scope.row.FM_ID)" icon="el-icon-circle-check"></el-button>
+              </el-tooltip>
+              <el-tooltip  class="item" effect="dark" content="添加定时任务" placement="top-start">
+                <el-button size="small" type="primary" icon="el-icon-alarm-clock" @click="openjob(scope.row.FM_ID)"></el-button>
+              </el-tooltip>
             </el-button-group>
           </template>
         </el-table-column>
-        <el-table-column label="结果">
+        <el-table-column label="结果" min-width="8%">
           <template slot-scope="scope">
-              <el-button type="success" icon="el-icon-s-data" circle @click="toresult(scope.row.FM_ID,scope.row.FM_MISSIONNAME,scope.row.FM_STATUS)"></el-button>
+              <el-button size="small" type="success" icon="el-icon-s-data" circle @click="toresult(scope.row.FM_ID,scope.row.FM_MISSIONNAME,scope.row.FM_STATUS)"></el-button>
               </template>
             </el-table-column>
       </el-table>
@@ -78,7 +128,7 @@
 </template>
 <script>
 import axios from 'axios'
-// import dayjs from 'dayjs'
+import day from 'dayjs'
 export default {
 
   data () {
@@ -88,15 +138,41 @@ export default {
       tableData: [],
       page: 1,
       total: 0,
-      limit: 10
+      limit: 10,
+      options: [{
+        value: 'HTML',
+        label: 'HTML'
+      }, {
+        value: 'CSS',
+        label: 'CSS'
+      }, {
+        value: 'JavaScript',
+        label: 'JavaScript'
+      }],
+      value: []
     }
   },
 
   mounted () {
-    this.handleCurrentChange(1)
+    // this.handleCurrentChange(1)
+    console.log(this.$route.params)
+    if (this.$route.params.tablename === undefined) {
+      this.handleCurrentChange(1)
+    } else {
+      this.fromassets()
+    }
   },
 
   methods: {
+    search () {
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/searchaccuracy?tablename=' + this.value)
+        .then(res => {
+          console.log('zheshi sousuo')
+          console.log(res)
+          this.tableData = res.data.data
+        })
+    },
     // 新建任务
     tomeasure () {
       this.$router.push({ path: '/createac/' })
@@ -109,6 +185,19 @@ export default {
     // 查看任务
     checkjob () {
       console.log('checkjob')
+      // console.log(day('2020-1-30 13:12:42').add(1, 'month').format('YYYY-MM-DD HH:mm:ss'))
+      // console.log(day('2020-8-3 13:12:42').add(1, 'month').format('YYYY-MM-DD HH:mm:ss'))
+      var dd = new Date()
+      console.log(dd)
+      console.log(day(dd).add(5, 'minute').format('YYYY-MM-DD HH:mm:ss'))
+      console.log(day(dd).format('YYYY-MM-DD HH:mm:ss'))
+    },
+    dingshi (tableid) {
+      axios
+        .post('http://47.94.199.242:5000/api/v1.0/jobsImmediately?tableid=' + tableid)
+        .then(res => {
+          console.log(res.data.data)
+        })
     },
     // 删除任务
     deletejob (tableid) {
@@ -158,6 +247,16 @@ export default {
           this.total = res.data.pages * this.limit
         })
     },
+    // 从数据实体页而来
+    fromassets () {
+      this.table_name = this.$route.params.tablename
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/searchaccuracy?tablename=' + this.table_name)
+        .then(res => {
+          console.log(res)
+          this.tableData = res.data.data
+        })
+    },
     // 多选
     handleSelectionChange (rows) {
       this.multipleSelection = rows
@@ -169,6 +268,9 @@ export default {
         )
         console.log(this.selected)
       }
+    },
+    goBack () {
+      this.$router.back()
     }
   }
 }
@@ -176,19 +278,28 @@ export default {
 <style scoped>
 .accuracy {
   padding: 10px;
+  width:100%;
+  height: 100%;
+  /* margin-top: 60px; */
+  /* background: yellow; */
+  /* position: absolute; */
+}
+.lll{
+   display:flex
 }
 .pages {
   padding: 10px;
   border-radius: 4px;
   background-color: white;
   margin-bottom: 10px;
-  height: 120px;
+  height: 90px;
 }
 .h3 {
   font-size: 14px;
   font-weight: bold;
   margin-bottom: 8px;
   color:#909399;
+  line-height: 24px;
 }
 .span_size {
   font-size: 20px;

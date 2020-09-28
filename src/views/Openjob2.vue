@@ -16,7 +16,7 @@
         </div>
         <template>
           <div class="block" v-for="(item,index) in timeList" :key="index">
-            <span>第{{index+1}}个</span>
+            <span style="margin-right:12px">{{index+1}}</span>
             <el-date-picker
               v-model="item.value"
               type="datetime"
@@ -24,8 +24,6 @@
               placeholder="选择日期时间"
               :picker-options="pickerOptions"
             >
-              {{opentime1}}
-              <!-- <span>hh</span> -->
             </el-date-picker>
             <el-button @click="add" v-if="index===timeList.length-1&&index<5">
               <i class="el-icon-plus"></i>
@@ -46,7 +44,7 @@
 </template>
 <script>
 import axios from 'axios'
-// import qs from 'qs'
+import day from 'dayjs'
 export default {
   data () {
     return {
@@ -66,8 +64,6 @@ export default {
           return time.getTime() <= Date.now()
         }
       },
-      value1: '',
-      opentime1: null,
       timeList: [{
         id: '',
         value: ''
@@ -77,13 +73,31 @@ export default {
   mounted () {
     console.log(this.$route.params)
     this.timeList[0].id = this.$route.params.tableid
+    this.add()
+    this.gettime()
+    setInterval(this.gettime, 4.5 * 60 * 1000)
   },
   methods: {
+    // 可选6个时间
+    add () {
+      for (let i = 0; i < 5; i++) {
+        this.timeList.push({ id: this.$route.params.tableid, value: '' })
+      }
+    },
+    // 获取6个时间
+    gettime () {
+      const result = []
+      var dd = new Date()
+      result.push(day(dd).add(5, 'minute').format('YYYY-MM-DD HH:mm:ss'))
+      this.timeList[0].value = result[0]
+      for (let i = 1; i < 6; i++) {
+        result.push(day(dd).add(i, 'month').format('YYYY-MM-DD HH:mm:ss'))
+        this.timeList[i].value = result[i]
+      }
+      console.log(result)
+    },
     back () {
       this.$router.push({ path: '/job/' })
-    },
-    add () {
-      this.timeList.push({ id: this.$route.params.tableid, value: '' })
     },
     submit () {
       console.log(this.timeList)
@@ -175,10 +189,5 @@ export default {
   border-radius: 4px;
   width: 305px;
   margin: 5px auto;
-}
-</style>
-<style>
-.el-picker-panel__footer>button:first-child{
-  display: none;
 }
 </style>

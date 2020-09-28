@@ -3,8 +3,10 @@
     <div class="nav">
 
       <!-- logo -->
+
       <div class="logo">
-        logo
+        <i class="el-icon-coordinate"></i>
+        闵    行
       </div>
       <!-- 侧栏 -->
       <el-menu
@@ -14,6 +16,7 @@
         text-color="#fff"
         active-text-color="#ffd04b"
         :router="true"
+        @select="handleselect"
       >
         <el-menu-item index="/">
         <i class="el-icon-data-analysis"></i>
@@ -99,7 +102,7 @@ html,
 body {
   padding: 0;
   margin: 0;
-  background-color: #f2f2f2;
+  background-color: #edeff3;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 #app {
@@ -123,12 +126,17 @@ body {
 }
 .header{
   height: 60px;
-  background-color: #041528;
+  background-color: white;
   flex:  0 0 auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
 }
 .logo{
   height: 60px;
   color: white;
-  background-color:#ccc ;
+  background-color:#041528;
+  font-size: x-large;
+  line-height: 60px;
+  text-align: center;
+  font-family:"Hiragino Sans GB";
 }
 </style>

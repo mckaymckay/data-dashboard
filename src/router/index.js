@@ -19,6 +19,7 @@ import Measure1 from '../views/Measure1.vue'
 import Openjob from '../views/Openjob.vue'
 import Openjob2 from '../views/Openjob2.vue'
 import Resac from '../views/Resac.vue'
+import Resjob from '../views/Resjob.vue'
 import Test from '../views/Test.vue'
 // import Test22 from '../views/Test22.vue'
 
@@ -90,6 +91,12 @@ const routes = [
     path: '/resac/:tableid/:missionname/:status',
     name: 'Resac',
     component: Resac
+  },
+  {
+    // 实体检测任务结果
+    path: '/resjob/:jobname/:jobid',
+    name: 'Resjob',
+    component: Resjob
   },
   {
     // 实体检测任务开启

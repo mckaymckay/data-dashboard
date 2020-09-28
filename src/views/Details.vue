@@ -2,7 +2,12 @@
   <div class="details">
     <!-- 页面标识 -->
     <div class="pages">
-      <div class="h3">数据实体/详情</div>
+      <div class="lll">
+        <div><el-page-header @back="goBack"></el-page-header></div>
+        <!-- <span class="span_size">检测结果</span> -->
+        <div class="h3">数据实体/详情</div>
+      </div>
+
       <div>
         <span class="span_size">{{table_name}}</span>
         <!-- <span class="span_size">TPAS-LZ</span> -->
@@ -15,7 +20,7 @@
           :data="tableData"
           highlight-current-row
           style="width: 100%"
-          height="500">
+          height="550">
           <el-table-column type="index" width="50">
           </el-table-column>
           <el-table-column label="字段名" width="200">
@@ -32,14 +37,6 @@
             <template slot-scope="scope">
               {{ scope.row.MS_MEASURE }}
             </template>
-            <!-- <el-select v-model="value" placeholder="无需检测">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-            </el-select> -->
           </el-table-column>
           <el-table-column
             property="address"
@@ -53,14 +50,14 @@
         </el-table>
     </div>
     <!-- 操作 -->
-    <div class="pagination_parent">
+    <!-- <div class="pagination_parent">
       <div class="pagination">
         <el-button-group>
           <el-button type="primary" icon="el-icon-arrow-left" @click="back">返回</el-button>
-          <!-- <el-button type="primary" @click="toperfection()">详细  <i class="el-icon-arrow-right"></i></el-button> -->
+          <el-button type="primary" @click="toperfection()">详细  <i class="el-icon-arrow-right"></i></el-button>
         </el-button-group>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -93,7 +90,7 @@ export default {
     dayjs (e) {
       return dayjs(e)
     },
-    back () {
+    goBack () {
       // this.$router.push({ path: '/Assets' })
       this.$router.back()
     },
@@ -112,12 +109,16 @@ export default {
 .details {
   padding: 10px;
 }
+.lll{
+  display: flex;
+}
 .pages {
   padding: 10px;
   border-radius: 4px;
   background-color: white;
   margin-bottom: 10px;
   height: 90px;
+  line-height: 24px;
 }
 .h3 {
   font-size: 14px;
