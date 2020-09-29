@@ -82,9 +82,9 @@
         <!-- 执行状态 -->
         <el-table-column prop="status" label="状态" min-width="10%">
               <template slot-scope="scope">
-                <el-button size="small" v-if="scope.row['FM_STATUS']==='暂停'" type="danger" >暂停</el-button>
-                <el-button size="small" v-if="scope.row['FM_STATUS']==='已完成'" type="success" >完成</el-button>
-                <el-button size="small" v-else-if="scope.row['FM_STATUS']==='执行中'" type="success" >执行</el-button>
+                <el-button size="small" v-if="scope.row['FM_STATUS']==='暂停'" type="danger" >未开启</el-button>
+                <el-button size="small" v-if="scope.row['FM_STATUS']==='已完成'" type="success" >已完成</el-button>
+                <el-button size="small" v-else-if="scope.row['FM_STATUS']==='等待下次执行'" type="success" >待执行</el-button>
                  <!-- <el-button type="danger" plain="">暂停</el-button> -->
               </template>
             </el-table-column>
@@ -95,7 +95,7 @@
               <!-- <el-button type="primary" icon="el-icon-view" @click="checkjob"></el-button> -->
               <el-button size="small" type="primary" icon="el-icon-delete" @click="deletejob(scope.row.FM_ID)"></el-button>
               <el-tooltip class="item" effect="dark" content="添加即时任务" placement="top-start">
-                <el-button size="small" v-if="scope.row['FM_STATUS']==='执行中'" type="primary" @click="redefine(scope.row.FM_ID)" icon="el-icon-video-pause"></el-button>
+                <el-button size="small" v-if="scope.row['FM_STATUS']==='等待下次执行'" type="primary" @click="redefine(scope.row.FM_ID)" icon="el-icon-video-play"></el-button>
                 <el-button size="small" v-else-if="scope.row['FM_STATUS']==='暂停'" type="primary" @click="dingshi(scope.row.FM_ID)" icon="el-icon-video-play"></el-button>
                 <el-button size="small" v-else-if="scope.row['FM_STATUS']==='已完成'" type="primary" @click="dingshi(scope.row.FM_ID)" icon="el-icon-circle-check"></el-button>
               </el-tooltip>

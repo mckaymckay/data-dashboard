@@ -84,12 +84,14 @@
             </el-table-column>
             <el-table-column label="操作" width="200">
               <el-button-group slot-scope="scope" >
-                <el-button size="small" type="primary" icon="el-icon-view" @click="chakan(scope.row.JS_TABLEID,scope.row.JS_TABLENAME)"></el-button>
+                <!-- 删除任务 -->
                 <el-button size="small" type="primary" icon="el-icon-delete" @click="deletejob(scope.row.JS_ID)"></el-button>
-                <el-button size="small" v-if="scope.row['JS_STATUS']==='暂停'" type="primary" icon="el-icon-video-play"></el-button>
-                <el-button size="small" v-else-if="scope.row['JS_STATUS']==='等待下次执行'" type="primary" @click="openjob(scope.row.JS_TABLEID)" icon="el-icon-video-play"></el-button>
-                <el-button size="small" v-else-if="scope.row['JS_STATUS']==='已完成'" type="primary" @click="openjob(scope.row.JS_TABLEID)" icon="el-icon-video-play"></el-button>
-
+                <!-- 即时任务 -->
+                  <el-button size="small" v-if="scope.row['JS_STATUS']==='暂停'" type="primary" @click="immediately(scope.row.JS_TABLEID)" icon="el-icon-video-play"></el-button>
+                  <el-button size="small" v-else-if="scope.row['JS_STATUS']==='等待下次执行'" type="primary" @click="immediately(scope.row.JS_TABLEID)" icon="el-icon-video-play"></el-button>
+                  <el-button size="small" v-else-if="scope.row['JS_STATUS']==='已完成'" type="primary" @click="immediately(scope.row.JS_TABLEID)" icon="el-icon-circle-check"></el-button>
+                <!-- 定时任务 -->
+                <el-button size="small" type="primary" icon="el-icon-alarm-clock" @click="openjob(scope.row.JS_TABLEID)"></el-button>
               </el-button-group>
             </el-table-column>
             <el-table-column label="结果">
@@ -115,7 +117,7 @@
 </template>
 <script>
 import axios from 'axios'
-import dayjs from 'dayjs'
+import day from 'dayjs'
 export default {
   data () {
     return {
@@ -158,9 +160,6 @@ export default {
           console.log(res)
           this.tableData = res.data.data
         })
-    },
-    dayjs (e) {
-      return dayjs(e)
     },
     // 分页
     handleCurrentChange (val) {
@@ -221,6 +220,18 @@ export default {
         })
       })
     },
+    // 即时任务
+    immediately (tableid) {
+      var dd = new Date()
+      var time = day(dd).format('YYYY-MM-DD HH:mm:ss')
+      console.log(time)
+      axios
+        .post('http://47.94.199.242:5000/api/v1.0/jobsImmediately?tableid=' + tableid + '&time=' + time)
+        .then(res => {
+          console.log(res)
+        })
+    },
+    // 开启任务
     openjob (tableid) {
       console.log(tableid)
       this.$router.push({ path: '/openjob2/' + tableid })

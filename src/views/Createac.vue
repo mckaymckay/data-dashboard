@@ -13,18 +13,6 @@
     <div class="content">
       <div style="height:50px"></div>
       <el-form :model="ruleForm" :rules="rules" label-width="300px" class="demo-ruleForm">
-        <el-form-item label="任务名称" prop="name">
-          <el-input v-model="ruleForm.name" style="width: 300px" placeholder="请输入任务名称">{{job_name}}</el-input>
-        </el-form-item>
-        <div style="height:20px"></div>
-        <el-form-item label="任务描述" prop="description">
-          <el-input
-            v-model="ruleForm.description"
-            style="width: 300px"
-            placeholder="请输入任务描述"
-          >{{job_description}}</el-input>
-        </el-form-item>
-        <div style="height:20px"></div>
         <el-form-item label="选择数据表" prop="table">
           <el-select v-model="ruleForm.table" style="width: 300px" placeholder="请选择数据表">
             {{tables}}
@@ -35,6 +23,18 @@
               :value="item.TM_ID"
             ></el-option>
           </el-select>
+        </el-form-item>
+        <div style="height:20px"></div>
+        <el-form-item label="任务名称" prop="name">
+          <el-input v-model="ruleForm.name" style="width: 300px" placeholder="请输入任务名称">{{job_name}}</el-input>
+        </el-form-item>
+        <div style="height:20px"></div>
+        <el-form-item label="任务描述" prop="description">
+          <el-input
+            v-model="ruleForm.description"
+            style="width: 300px"
+            placeholder="请输入任务描述"
+          >{{job_description}}</el-input>
         </el-form-item>
         <el-form-item>
           <el-button icon="el-icon-arrow-left" @click="back">返回</el-button>
