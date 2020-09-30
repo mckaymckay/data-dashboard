@@ -7,10 +7,10 @@
         <span class="span_size">数据列表</span>
       </div> -->
       <div class="search_button">
-        <!-- <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">{{searchname}}
+        <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">{{searchname}}
           <el-button slot="append" icon="el-icon-search" @click="search">搜索</el-button>
-        </el-input> -->
-        <template>
+        </el-input>
+        <!-- <template>
           <el-select
             v-model="value"
             filterable
@@ -28,13 +28,28 @@
             </el-option>
           </el-select>
         </template>
-        <el-button slot="append" icon="el-icon-search" @click="search" style="background-color:">搜索</el-button>
+        <el-button slot="append" icon="el-icon-search" @click="search" style="background-color:">搜索</el-button> -->
       </div>
+    </div>
+    <!-- 主题库搜索 -->
+    <div style="background-color:white">
+      <div style="line-height: 50px;margin-left: 40px">
+        <span style="color:#409EFF;margin-right:20px">主 题 库: </span>
+        <template>
+          <el-radio-group v-model="radio" @change="handlechange">
+            <el-radio :label="1">全部数据</el-radio>
+            <el-radio :label="2">教师档案库</el-radio>
+            <el-radio :label="3">教师课题库</el-radio>
+            <el-radio :label="4">云录播</el-radio>
+          </el-radio-group>
+        </template>
+      </div>
+      <div style="height:10px;background-color:#edeff3"></div>
     </div>
     <!-- 表格 -->
     <div class="content">
       <el-table
-      :data="tableData" style="width: 100%" height="500px">
+      :data="tableData" style="width: 100%">
       <el-table-column type="" width="20">
       </el-table-column>
       <!-- 数据表 -->
@@ -115,25 +130,36 @@ export default {
       page: 1,
       total: 0,
       limit: 10,
-      options: [{
-        value: 'HTML',
-        label: 'HTML'
-      }, {
-        value: 'CSS',
-        label: 'CSS'
-      }, {
-        value: 'JavaScript',
-        label: 'JavaScript'
-      }],
-      value: []
+      radio: 1
     }
   },
   // 开始执行分页函数
   mounted () {
-    this.handleCurrentChange(1)
+    // this.handleCurrentChange(1)
+    this.handlechange()
   },
 
   methods: {
+    handlechange () {
+      console.log(this.radio)
+      const typeEnum = {
+        2: 'OD_TPAS',
+        3: 'OD_SRMS',
+        4: 'OD_YLB'
+      }
+      if (this.radio === 1) {
+        this.handleCurrentChange(1)
+      } else {
+        axios
+          .get('http://47.94.199.242:5000/api/v1.0/assets?page=1&size=20&types=' + typeEnum[this.radio] + '_%')
+          .then(res => {
+            console.log('zheshi sousuo')
+            console.log(this.radio)
+            console.log(res)
+            this.tableData = res.data.data
+          })
+      }
+    },
     dayjs (e) {
       return dayjs(e)
     },

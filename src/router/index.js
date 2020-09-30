@@ -131,6 +131,7 @@ const routes = [
   },
   {
     path: '/fill/:tableid/:tablename/:fieldname',
+    // path: '/fill',
     name: 'Fill',
     component: Fill
   }

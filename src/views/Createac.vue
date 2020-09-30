@@ -12,27 +12,27 @@
     <!-- 页面标识 -->
     <div class="content">
       <div style="height:50px"></div>
-      <el-form :model="ruleForm" :rules="rules" label-width="300px" class="demo-ruleForm">
+      <el-form :model="ruleForm" :rules="rules" label-width="400px" class="demo-ruleForm">
         <el-form-item label="选择数据表" prop="table">
-          <el-select v-model="ruleForm.table" style="width: 300px" placeholder="请选择数据表">
+          <el-select @change="handlechange" v-model="ruleForm.table" style="width: 400px" placeholder="请选择数据表">
             {{tables}}
             <el-option
               v-for="item in dataList"
               :key="item.TM_ID"
               :label="item.TM_TABLENAME"
-              :value="item.TM_ID"
+              :value="{value:item.TM_ID,label:item.TM_TABLENAME}"
             ></el-option>
           </el-select>
         </el-form-item>
         <div style="height:20px"></div>
         <el-form-item label="任务名称" prop="name">
-          <el-input v-model="ruleForm.name" style="width: 300px" placeholder="请输入任务名称">{{job_name}}</el-input>
+          <el-input @focus="handlefocus" v-model="ruleForm.name" style="width: 400px" placeholder="请输入任务名称">{{job_name}}</el-input>
         </el-form-item>
         <div style="height:20px"></div>
         <el-form-item label="任务描述" prop="description">
           <el-input
             v-model="ruleForm.description"
-            style="width: 300px"
+            style="width: 400px"
             placeholder="请输入任务描述"
           >{{job_description}}</el-input>
         </el-form-item>
@@ -58,15 +58,12 @@ export default {
       job_name: null,
       job_description: null,
       tables: null,
-
       dataList: {},
-
       ruleForm: {
         name: '',
         description: '',
         table: ''
       },
-
       rules: {
         name: [
           { required: true, message: '请输入任务名称', trigger: 'blur' }
@@ -86,7 +83,7 @@ export default {
       .get('http://47.94.199.242:5000/api/v1.0/detect')
       .then(res => {
         if (res.status === 200) {
-          console.log(res.data.data)
+          // console.log(res.data.data)
           this.dataList = res.data.data
         }
       }
@@ -94,6 +91,13 @@ export default {
   },
 
   methods: {
+    // 自动产生任务名称和任务描述
+    handlechange (params) {
+      const { value, label } = params
+      console.log(value, label)
+      this.ruleForm.name = label + '波动检测'
+      this.ruleForm.description = label + '波动检测'
+    },
     back () {
       console.log('back')
       this.$router.push({ path: '/accuracy/' })
@@ -101,7 +105,7 @@ export default {
     tijiao () {
       this.job_name = this.ruleForm.name
       this.job_description = this.ruleForm.description
-      this.tables = this.ruleForm.table
+      this.tables = this.ruleForm.table // id
       console.log(this.job_name)
       console.log(this.job_description)
       console.log(this.tables)
@@ -129,11 +133,7 @@ export default {
               callback: () => this.$router.push({ path: '/accuracy/' })
             })
           }
-          // }
         })
-        // .catch(res => {
-        //   console.error()
-        // })
     }
   }
 }

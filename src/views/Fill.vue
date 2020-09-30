@@ -5,24 +5,50 @@
         <span class="h3">质量评估</span>
           <el-divider direction="vertical"></el-divider>
         <span class="h3">质量改进</span>
+        <el-divider direction="vertical"></el-divider>
+        <span class="h3">空值填充</span>
+        <div style="height:20px"></div>
       <div>
-        <span class="span_size">{{tablename}}</span>
+        <span class="span_size" style="margin-left:20px;font-size:larger">{{tablename}}</span>
       </div>
+      <div style="height:10px"></div>
+      <span style="margin-left:20px;font-size:small;color:#606266">统一填充：使用同一个值填充字段;条件填充：根据条件分类处理空值。</span>
     </div>
     <!-- 表格 -->
     <div class="content">
-        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="300px" class="demo-ruleForm">
-            <el-form-item label="数据表" prop="field">
+        <el-form
+        :model="ruleForm"
+        :rules="rules"
+        ref="ruleForm"
+        label-width="400px"
+        class="demo-ruleForm">
+            <el-form-item label="数据表">
               <el-input v-model="ruleForm.tablename" style="width: 300px" placeholder="">
                 <span>{{tablename}}</span>
                 </el-input>
             </el-form-item>
-            <el-form-item label="问题字段" prop="question">
+            <el-form-item label="问题字段">
               <el-input v-model="ruleForm.fieldname" style="width: 300px" placeholder="">{{fieldname}}</el-input>
             </el-form-item>
-            <el-form-item label="问题描述" prop="advice">
+            <el-form-item label="问题描述">
               <el-input v-model="ruleForm.problem" style="width: 300px" placeholder="">含有空值</el-input>
+              <!-- <el-select v-model="value" clearable placeholder="请选择" style="width:300px">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select> -->
             </el-form-item>
+            <el-form-item label="填充方式">
+              <template>
+                <el-radio-group v-model="radio">
+                  <el-radio :label="3">统一填充</el-radio>
+                  <el-radio :label="6">条件填充</el-radio>
+                </el-radio-group>
+              </template>
+             </el-form-item>
             <el-form-item label="填充值" prop="fill">
               <el-input v-model="ruleForm.fillkey" style="width: 300px" placeholder="请输入填充值">{{modifyvalue}}</el-input>
             </el-form-item>
@@ -32,15 +58,6 @@
             </el-form-item>
         </el-form>
     </div>
-    <!-- 操作 -->
-    <!-- <div class="pagination_parent">
-      <div class="pagination">
-        <el-button-group>
-          <el-button type="primary" icon="el-icon-arrow-left">返回</el-button>
-          <el-button type="primary">改进  <i class="el-icon-arrow-right"></i></el-button>
-        </el-button-group>
-      </div>
-    </div> -->
   </div>
 </template>
 <script>
@@ -51,12 +68,13 @@ export default {
       tableid: '',
       tablename: '',
       fieldname: '',
-      modifyvalue: null,
+      modifyvalue: '',
+      radio: 3,
       ruleForm: {
         tablename: '',
         fieldname: '',
         problem: '含有空值',
-        fillkey: ''
+        fillkey: '系统自动填充' + this.$route.params.fieldname
       },
       rules: {
         // fields: [
@@ -66,7 +84,24 @@ export default {
         // fill: [
         //   { required: true, message: '', trigger: 'change' }
         // ]
-      }
+      },
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value: ''
     }
   },
   mounted () {
@@ -104,7 +139,8 @@ export default {
     },
     back () {
       console.log('back')
-      this.$router.push({ path: '/assessment/' })
+      // console.log(this.ruleForm.fillkey)
+      this.$router.back()
     }
   }
 }
