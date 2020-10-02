@@ -37,36 +37,37 @@
       <el-table
       :data="tableData" style="width: 100%">
       <!-- 数据表 -->
-        <el-table-column label="数据表" width="200">
+        <el-table-column label="数据表" min-width="30%">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.TM_TABLENAME }}</span>
           </template>
         </el-table-column>
       <!-- 字段 -->
-        <el-table-column label="字段" width="200">
+        <el-table-column label="字段" min-width="20%">
           <template slot-scope="scope">
-            <span style="margin-left: 10px">{{ scope.row.FM_TABLEFIELD }}</span>
+            <el-button type="text">{{ scope.row.FM_TABLEFIELD }}</el-button>
           </template>
         </el-table-column>
       <!-- 问题描述 -->
-        <el-table-column label="问题描述" width="300">
+        <el-table-column label="问题描述" min-width="20%">
           <template slot-scope="scope">
-            <span style="margin-left: 10px">{{ scope.row.PS_PROBLEM }}</span>
+            <span>{{ scope.row.PS_PROBLEM }}</span>
           </template>
         </el-table-column>
       <!-- 操作 -->
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" min-width="20%">
           <template slot-scope="scope">
-            <span style="margin-left: 10px;color:#409EFF" @click="tofill(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)">
-              <el-button size="small" type="primary" plain>更改</el-button>
-              </span>
+            <span>
+              <el-button v-if="scope.row.PS_PROBLEM==='含有空值'" @click="tofill(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)" size="small" type="primary" plain>更改</el-button>
+              <el-button v-else-if="scope.row.PS_PROBLEM==='不符合标准值'" @click="tostandard(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)" size="small" type="primary" plain>更改</el-button>
+              <el-button v-else-if="scope.row.PS_PROBLEM==='含有奇异值'" @click="tostandard1(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)" size="small" type="primary" plain>更改</el-button>
+            </span>
           </template>
         </el-table-column>
         <!-- 是否更改完成 -->
-        <el-table-column label="是否更改完成" width="300">
+        <el-table-column label="是否更改完成" min-width="10%">
           <template slot-scope="">
             <span style="margin-left: 10px;color:#409EFF">
-              <!-- <el-button type="primary" plain>已更改</el-button> -->
               <el-button size="small" type="success" icon="el-icon-check" circle></el-button>
               </span>
           </template>
@@ -79,7 +80,7 @@
       <el-pagination
       @current-change="handleCurrentChange"
         :total="total"
-        :current-page="page"
+        :current-page.sync="page"
         background
         layout="prev, pager, next">
       </el-pagination>
@@ -107,35 +108,67 @@ export default {
   mounted () {
     console.log(this.$route.query.tablename)
     if (this.$route.query.tablename === undefined) {
-      // this.handleCurrentChange(1)
-      this.handlechange()
+      this.handleCurrentChange(1)
+      // this.handlechange()
     } else {
       this.fromassets()
     }
   },
   methods: {
     handlechange () {
+      this.page = 1
       console.log(this.radio)
+      if (this.radio === 1) {
+        // this.handleCurrentChange(1)
+        this.fenye(1)
+      } else {
+        this.fenye2(1)
+      }
+    },
+    // 分页
+    fenye (val) {
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/problemlist?page=' + val + '&size=20')
+        .then(res => {
+          console.log('zheshi assets')
+          console.log(res)
+          this.tableData = res.data.data
+          this.total = res.data.pages * this.limit
+        })
+    },
+    // 分页2
+    fenye2 (val) {
       const typeEnum = {
         2: 'OD_TPAS',
         3: 'OD_SRMS',
         4: 'OD_YLB'
       }
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/problemlist?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%')
+        .then(res => {
+          console.log('zheshi sousuo')
+          console.log(this.radio)
+          console.log(res)
+          this.tableData = res.data.data
+          this.total = res.data.pages * this.limit
+        })
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
       if (this.radio === 1) {
-        this.handleCurrentChange(1)
+        this.fenye(val)
       } else {
-        axios
-          .get('http://47.94.199.242:5000/api/v1.0/problemlist?page=1&size=20&types=' + typeEnum[this.radio] + '_%')
-          .then(res => {
-            console.log('zheshi sousuo')
-            console.log(this.radio)
-            console.log(res)
-            this.tableData = res.data.data
-          })
+        this.fenye2(val)
       }
     },
     tofill (tableid, tablename, fieldname) {
       this.$router.push({ path: '/fill/' + tableid + '/' + tablename + '/' + fieldname })
+    },
+    tostandard (tableid, tablename, fieldname) {
+      this.$router.push({ path: '/standard/' + tableid + '/' + tablename + '/' + fieldname })
+    },
+    tostandard1 (tableid, tablename, fieldname) {
+      this.$router.push({ path: '/standard/' + tableid + '/' + tablename + '/' + fieldname })
     },
     // 从数据实体而来
     fromassets () {
@@ -155,18 +188,6 @@ export default {
         .then(res => {
           console.log(res)
           this.tableData = res.data.data
-        })
-    },
-    // 分页
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/problemlist?page=' + val + '&size=10')
-        .then(res => {
-          console.log('zheshi assessment')
-          console.log(res)
-          this.tableData = res.data.data
-          this.total = res.data.counts
         })
     },
     goBack () {

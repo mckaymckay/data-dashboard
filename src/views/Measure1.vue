@@ -3,32 +3,10 @@
     <!-- 页面标识 -->
     <div class="pages">
       <div class="h3">规则定义</div>
-      <!-- <div>
-        <span class="span_size">数据列表</span>
-      </div> -->
       <div class="search_button">
         <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">{{searchname}}
           <el-button slot="append" icon="el-icon-search" @click="search">搜索</el-button>
         </el-input>
-        <!-- <template>
-          <el-select
-            v-model="value"
-            filterable
-            clearable
-            size="5px"
-            style="width:400px"
-            allow-create
-            default-first-option
-            placeholder="请选择表或主题库">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </template>
-        <el-button slot="append" icon="el-icon-search" @click="search" style="background-color:">搜索</el-button> -->
       </div>
     </div>
     <!-- 主题库搜索 -->
@@ -53,25 +31,25 @@
       <el-table-column type="" width="20">
       </el-table-column>
       <!-- 数据表 -->
-        <el-table-column label="数据表" width="250">
+        <el-table-column label="数据表" min-width="25%">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.TM_TABLENAME }}</span>
           </template>
         </el-table-column>
       <!-- 数据库 -->
-        <el-table-column label="数据库" width="150">
+        <el-table-column label="数据库" min-width="15%">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.TM_DBNAME }}</span>
           </template>
         </el-table-column>
       <!-- 创建时间 -->
-        <el-table-column label="创建时间" width="200">
+        <el-table-column label="创建时间" min-width="25%">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{scope.row.TM_CREATETIME}}</span>
           </template>
         </el-table-column>
       <!-- 规则定义情况 -->
-        <el-table-column label="规则定义情况" width="200">
+        <el-table-column label="规则定义情况" min-width="15%">
           <template slot-scope="scope">
             <!-- <span v-for="item in scope.row" :key="item.TM_ISDEFINED"> -->
               <span style="margin-left: 10px" v-if="scope.row.TM_ISDEFINED === '1'">已定义</span>
@@ -80,22 +58,12 @@
           </template>
         </el-table-column>
         <!-- 操作  -->
-        <el-table-column label="操作">
+        <el-table-column label="操作" min-width="20%">
           <template slot-scope="scope">
             <!-- <el-button size="mini" type="text" @click="todetails(scope.row.TM_ID)">详情</el-button> -->
             <el-button size="mini" type="text" @click="tomeasure(scope.row.TM_ID,scope.row.TM_TABLENAME)">规则定义</el-button>
             <el-button size="mini" type="text"  v-if="scope.row.TM_ISDEFINED === '1'" @click="reset(scope.row.TM_ID)">重置规则</el-button>
             <el-button size="mini" type="text"  v-else-if="scope.row.TM_ISDEFINED === '0'" @click="reset(2)">重置规则</el-button>
-            <!-- <el-dialog
-              title="提示"
-              :visible.sync="dialogVisible"
-              width="30%">
-              <span>将删除这个表所有的度量规则，回到默认状态，即'无需检测'，您确认要重置规则吗？</span>
-                <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-              </span>
-            </el-dialog> -->
           </template>
         </el-table-column>
       </el-table>
@@ -105,7 +73,7 @@
       <div class="pagination">
       <el-pagination @current-change="handleCurrentChange"
         :total="total"
-        :current-page="page"
+        :current-page.sync="page"
         background
         layout="prev, pager, next"
         >
@@ -135,29 +103,54 @@ export default {
   },
   // 开始执行分页函数
   mounted () {
-    // this.handleCurrentChange(1)
-    this.handlechange()
+    this.handleCurrentChange(1)
   },
 
   methods: {
     handlechange () {
+      this.page = 1
       console.log(this.radio)
+
+      if (this.radio === 1) {
+        this.fenye(1)
+      } else {
+        this.fenye2(1)
+      }
+    },
+    // 分页
+    fenye (val) {
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/assets?page=' + val + '&size=20')
+        .then(res => {
+          console.log('zheshi assets')
+          console.log(res)
+          this.tableData = res.data.data
+          this.total = res.data.pages * this.limit
+        })
+    },
+    // 分页2
+    fenye2 (val) {
       const typeEnum = {
         2: 'OD_TPAS',
         3: 'OD_SRMS',
         4: 'OD_YLB'
       }
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/assets?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%')
+        .then(res => {
+          console.log('zheshi sousuo')
+          console.log(this.radio)
+          console.log(res)
+          this.tableData = res.data.data
+          this.total = res.data.pages * this.limit
+        })
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
       if (this.radio === 1) {
-        this.handleCurrentChange(1)
+        this.fenye(val)
       } else {
-        axios
-          .get('http://47.94.199.242:5000/api/v1.0/assets?page=1&size=20&types=' + typeEnum[this.radio] + '_%')
-          .then(res => {
-            console.log('zheshi sousuo')
-            console.log(this.radio)
-            console.log(res)
-            this.tableData = res.data.data
-          })
+        this.fenye2(val)
       }
     },
     dayjs (e) {
@@ -207,18 +200,6 @@ export default {
           })
         }
       })
-    },
-    // 分页
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/assets?page=' + val + '&size=10')
-        .then(res => {
-          console.log('zheshi assets')
-          console.log(res)
-          this.tableData = res.data.data
-          this.total = res.data.pages * this.limit
-        })
     },
     search () {
       this.searchname = this.input1

@@ -66,11 +66,6 @@ const routes = [
     component: Measure
   },
   {
-    path: '/standard',
-    name: 'Standard',
-    component: Standard
-  },
-  {
     path: '/accuracy',
     name: 'Accuracy',
     component: Accuracy
@@ -134,6 +129,11 @@ const routes = [
     // path: '/fill',
     name: 'Fill',
     component: Fill
+  },
+  {
+    path: '/standard/:tableid/:tablename/:fieldname',
+    name: 'Standard',
+    component: Standard
   }
 ]
 

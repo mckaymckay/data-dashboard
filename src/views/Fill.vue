@@ -43,14 +43,27 @@
             </el-form-item>
             <el-form-item label="填充方式">
               <template>
-                <el-radio-group v-model="radio">
-                  <el-radio :label="3">统一填充</el-radio>
-                  <el-radio :label="6">条件填充</el-radio>
+                <el-radio-group v-model="radio" @change="handlechange">
+                  <div>
+                    <el-radio :label="1">统一填充</el-radio>
+                  </div>
+                  <div style="margin-top:10px">
+                    <el-radio :label="2">条件填充:请输入正确的sql语句</el-radio>
+                  </div>
                 </el-radio-group>
               </template>
              </el-form-item>
             <el-form-item label="填充值" prop="fill">
-              <el-input v-model="ruleForm.fillkey" style="width: 300px" placeholder="请输入填充值">{{modifyvalue}}</el-input>
+              <!-- <el-input v-model="ruleForm.fillkey" style="width: 300px" placeholder="请输入sql语句">{{modifyvalue}}</el-input> -->
+              <el-input
+                type="textarea"
+                :autosize="{ minRows: 2, maxRows: 4}"
+                placeholder="请输入"
+                v-model="ruleForm.fillkey"
+                style="width: 300px"
+                clearable>
+                {{modifyvalue}}
+              </el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="submitForm('ruleForm')">修改</el-button>
@@ -69,12 +82,12 @@ export default {
       tablename: '',
       fieldname: '',
       modifyvalue: '',
-      radio: 3,
+      radio: 1,
       ruleForm: {
         tablename: '',
         fieldname: '',
         problem: '含有空值',
-        fillkey: '系统自动填充' + this.$route.params.fieldname
+        fillkey: '系统自动填充“' + this.$route.params.fieldname + '”字段'
       },
       rules: {
         // fields: [
@@ -84,24 +97,7 @@ export default {
         // fill: [
         //   { required: true, message: '', trigger: 'change' }
         // ]
-      },
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
-      value: ''
+      }
     }
   },
   mounted () {
@@ -112,12 +108,21 @@ export default {
     this.ruleForm.fieldname = this.$route.params.fieldname
   },
   methods: {
+    handlechange () {
+      console.log(this.radio)
+      if (this.radio === 2) {
+        this.ruleForm.fillkey = ''
+      } else {
+        this.ruleForm.fillkey = '系统自动填充' + this.$route.params.fieldname
+      }
+    },
     submitForm (formName) {
       this.modifyvalue = this.ruleForm.fillkey
-      // console
+      console.log(this.modifyvalue)
       if (!this.modifyvalue) {
-        alert('请输入填充值')
-        return false
+        this.$alert('请输入填充值', '提示', {
+          confirmButtonText: '确定'
+        })
       }
       axios
         .put('http://47.94.199.242:5000/api/v1.0/quality?tableid=' + this.tableid + '&fieldname=' + this.$route.params.fieldname + '&modifyvalue=' + this.modifyvalue)

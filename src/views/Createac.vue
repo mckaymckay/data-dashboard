@@ -26,7 +26,7 @@
         </el-form-item>
         <div style="height:20px"></div>
         <el-form-item label="任务名称" prop="name">
-          <el-input @focus="handlefocus" v-model="ruleForm.name" style="width: 400px" placeholder="请输入任务名称">{{job_name}}</el-input>
+          <el-input v-model="ruleForm.name" style="width: 400px" placeholder="请输入任务名称">{{job_name}}</el-input>
         </el-form-item>
         <div style="height:20px"></div>
         <el-form-item label="任务描述" prop="description">
@@ -105,10 +105,10 @@ export default {
     tijiao () {
       this.job_name = this.ruleForm.name
       this.job_description = this.ruleForm.description
-      this.tables = this.ruleForm.table // id
+      this.tables = this.ruleForm.table.value // id
       console.log(this.job_name)
       console.log(this.job_description)
-      console.log(this.tables)
+      // console.log(this.)
       if (!this.job_name) {
         alert('请输入任务名称')
         return false
@@ -122,7 +122,7 @@ export default {
         return false
       }
       axios
-        .post('http://47.94.199.242:5000/api/v1.0/accuracy?tableid=' + this.tables + '&missionname=' + this.job_name + '&description=' + this.job_description)
+        .post('http://47.94.199.242:5000/api/v1.0/accuracy?tableid=' + this.ruleForm.table.value + '&missionname=' + this.job_name + '&description=' + this.job_description)
         .then(res => {
           // if (res.status === 200) {
           console.log(res)

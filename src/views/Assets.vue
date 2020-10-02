@@ -41,9 +41,15 @@
           </template>
         </el-table-column>
       <!-- 数据库 -->
-        <el-table-column label="数据库" width="150">
+        <el-table-column label="数据库" width="100">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.TM_DBNAME }}</span>
+          </template>
+        </el-table-column>
+        <!-- 数据量 -->
+        <el-table-column label="数据量" width="100">
+          <template slot-scope="scope">
+            <span style="margin-left: 10px">{{ scope.row.TM_HISTORYNUMBER }}</span>
           </template>
         </el-table-column>
       <!-- 创建时间 -->
@@ -55,13 +61,14 @@
         <!-- 数据波动 -->
         <el-table-column label="数据波动" width="150">
           <template slot-scope="scope">
-            <span style="margin-left: 10px" @click="toaccuracy(scope.row.TM_TABLENAME)"><el-button type="text">50%
-              <!-- {{ scope.row.TM_DBNAME }} -->
-              </el-button></span>
+            <span style="margin-left: 10px" @click="toaccuracy(scope.row.TM_TABLENAME)">
+              <el-button type="text" v-if="scope.row['TM_ISACCURACY']==='0'">未创建</el-button>
+              <el-button type="text" v-else-if="scope.row['TM_ISACCURACY']==='1'">{{scope.row.TM_ACCURACYCOMPLETIONRATE*100}}%</el-button>
+              </span>
           </template>
         </el-table-column>
       <!-- 规则定义情况 -->
-        <el-table-column label="规则定义情况" width="200">
+        <el-table-column label="规则定义情况" width="150">
           <template slot-scope="scope">
             <!-- <span v-for="item in scope.row" :key="item.TM_ISDEFINED"> -->
               <span style="margin-left: 10px" v-if="scope.row.TM_ISDEFINED === '1'">
@@ -75,9 +82,10 @@
           <!-- 检测任务执行情况 -->
         </el-table-column><el-table-column label="检测任务执行情况" width="150">
           <template slot-scope="scope">
-            <span style="margin-left: 10px"><el-button type="text" @click="tojob(scope.row.TM_TABLENAME)">60%已完成
-              <!-- {{ scope.row.TM_DBNAME }} -->
-              </el-button></span>
+              <span style="margin-left: 10px">
+                <el-button type="text" v-if="scope.row['TM_ISDEFINED']==='0'" @click="tojob(scope.row.TM_TABLENAME)"></el-button>
+                <el-button type="text" v-else-if="scope.row['TM_ISDEFINED']==='1'" @click="tojob(scope.row.TM_TABLENAME)">{{scope.row.measure_rate}}%已完成</el-button>
+              </span>
           </template>
         </el-table-column>
         <!-- 数据质量情况 -->
@@ -104,7 +112,7 @@
       <el-pagination
       @current-change="handleCurrentChange"
         :total="total"
-        :current-page="page"
+        :current-page.sync="page"
         background
         layout="prev, pager, next"
         >
@@ -129,45 +137,65 @@ export default {
       total: 0,
       limit: 10,
       radio: 1,
-      options: [{
-        value: 'TPAS',
-        label: '教师档案'
-      }, {
-        value: 'SRMS',
-        label: '教师课题'
-      }, {
-        value: 'YLB',
-        label: '云录播课程'
-      }],
-      value: []
+      measure_rate: ''
     }
   },
   // 开始执行分页函数
   mounted () {
     this.handleCurrentChange(1)
-    // this.handlechange()
   },
   methods: {
     // 处理不同的库调用接口
     handlechange () {
+      this.page = 1
       console.log(this.radio)
+      if (this.radio === 1) {
+        this.fenye(1)
+      } else {
+        this.fenye2(1)
+      }
+    },
+    // 分页
+    fenye (val) {
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/assets?page=' + val + '&size=20')
+        .then(res => {
+          console.log('zheshi assets')
+          console.log(res)
+          this.tableData = res.data.data
+          this.total = res.data.pages * this.limit
+          this.tableData.forEach(v => {
+            v.measure_rate = Math.round(v.TM_MEASURECOMPLETIONRATE * 100)
+          })
+        })
+    },
+    // 分页2
+    fenye2 (val) {
       const typeEnum = {
         2: 'OD_TPAS',
         3: 'OD_SRMS',
         4: 'OD_YLB'
       }
-      if (this.radio === 1) {
-        this.fenye(1)
-      } else {
-        axios
-          .get('http://47.94.199.242:5000/api/v1.0/assets?page=1&size=20&types=' + typeEnum[this.radio] + '_%')
-          .then(res => {
-            console.log('zheshi sousuo')
-            console.log(this.radio)
-            console.log(res)
-            this.tableData = res.data.data
-            this.total = res.data.pages * this.limit
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/assets?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%')
+        .then(res => {
+          console.log('zheshi sousuo')
+          console.log(this.radio)
+          console.log(res)
+          this.tableData = res.data.data
+          this.total = res.data.pages * this.limit
+          this.tableData.forEach(v => {
+            v.measure_rate = Math.round(v.TM_MEASURECOMPLETIONRATE * 100)
+            console.log(this.measure_rate)
           })
+        })
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
+      if (this.radio === 1) {
+        this.fenye(val)
+      } else {
+        this.fenye2(val)
       }
     },
     dayjs (e) {
@@ -204,42 +232,6 @@ export default {
           tablename: tablename
         }
       })
-    },
-    // 分页
-    fenye (val) {
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/assets?page=' + val + '&size=20')
-        .then(res => {
-          console.log('zheshi assets')
-          console.log(res)
-          this.tableData = res.data.data
-          this.total = res.data.pages * this.limit
-        })
-    },
-    // 分页2
-    fenye2 (val) {
-      const typeEnum = {
-        2: 'OD_TPAS',
-        3: 'OD_SRMS',
-        4: 'OD_YLB'
-      }
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/assets?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%')
-        .then(res => {
-          console.log('zheshi sousuo')
-          console.log(this.radio)
-          console.log(res)
-          this.tableData = res.data.data
-          this.total = res.data.pages * this.limit
-        })
-    },
-    handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
-      if (this.radio === 1) {
-        this.fenye(val)
-      } else {
-        this.fenye2(val)
-      }
     },
     // 根据表名搜索
     search () {

@@ -17,7 +17,7 @@
       <!-- 表格 -->
       <div class="table">
           <el-table
-        :data="tableData" style="width: 100%" height="500px">
+        :data="tableData" style="width: 100%">
           <el-table-column label="" width="200">
             <template slot-scope="">
               <span style="margin-left: 10px"></span>
@@ -25,36 +25,32 @@
           </el-table-column>
           <el-table-column label="执行时间" width="260">
             <template slot-scope="scope">
-              <span style="margin-left: 10px">{{ scope.row.FL_UPDATETIME }}</span>
+              <span style="margin-left: 10px">{{ scope.row.JP_EXECUTIONTIME }}</span>
             </template>
           </el-table-column>
           <el-table-column label="执行状态" width="260">
             <template slot-scope="scope">
-              <el-button v-if="scope.row['FL_STATUS']==='已完成'" type="success" >{{ scope.row.FL_STATUS }}</el-button>
-              <el-button v-else-if="scope.row['FL_STATUS']==='未执行'" type="info" plain>{{ scope.row.FL_STATUS }}</el-button>
+              <el-button v-if="scope.row['JP_STATUS']==='已完成'" type="success" >{{ scope.row.JP_STATUS }}</el-button>
+              <el-button v-else-if="scope.row['JP_STATUS']==='未执行'" type="info" plain>{{ scope.row.JP_STATUS }}</el-button>
+              <el-button v-if="scope.row['JP_STATUS']==='失败'" type="danger" >{{ scope.row.JP_STATUS }}</el-button>
             </template>
           </el-table-column>
-          <el-table-column label="数据量">
+          <el-table-column label="执行结果">
             <template slot-scope="scope">
-              <span style="margin-left: 10px">{{ scope.row.FL_HISTORYNUMBER }}</span>
+              <span style="margin-left: 10px">{{ scope.row.JP_RESULT }}</span>
             </template>
           </el-table-column>
-          <!-- <el-table-column label="" width="260">
-            <template slot-scope="">
-              <span style="margin-left: 10px"></span>
-            </template>
-          </el-table-column> -->
         </el-table>
       </div>
     </div>
     <!-- 分页 -->
-    <div class="pagination_parent">
+    <!-- <div class="pagination_parent">
       <div class="pagination">
         <el-button-group>
           <el-button type="primary" icon="el-icon-arrow-left" @click="back">返回</el-button>
         </el-button-group>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -73,19 +69,16 @@ export default {
     this.get_data()
   },
   methods: {
-    back () {
-      this.$router.push({ path: '/Job/' })
-    },
     get_data () {
       console.log(this.$route.params)
       this.jobname = this.$route.params.jobname
-      var jobid = this.$route.params.jobid
+      // var jobid = this.$route.params.jobid
       // var status = this.$route.params.status
       axios
-        .get('http://47.94.199.242:5000/api/v1.0/accuracyResult?tableid=' + jobid)
+        .get('http://47.94.199.242:5000/api/v1.0/jobs/' + this.$route.params.jobid + '?page=1&size=10')
         .then(res => {
           console.log(res)
-        //   this.tableData = res.data.data
+          this.tableData = res.data.data
         })
     },
     goBack () {

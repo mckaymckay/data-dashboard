@@ -27,7 +27,7 @@
       <!-- 表格 -->
       <div class="table">
           <el-table
-        :data="tableData" style="width: 100%" height="380px">
+        :data="tableData" style="width: 100%">
 
           <el-table-column label="" width="200">
             <template slot-scope="">

@@ -3,11 +3,11 @@
     <!-- 页面标识 -->
     <div class="pages">
       <div class="lll">
-        <div><el-page-header @back="goBack"></el-page-header></div>
-        <span class="h3">波动检测</span>
+          <div><el-page-header @back="goBack"></el-page-header></div>
+          <span class="h3">波动检测</span>
       </div>
       <div class="search_button">
-        <el-input placeholder="请输入内容" v-model="input1" class="input-with-select">{{searchname}}
+        <el-input placeholder="请输入数据表" v-model="input1" class="input-with-select">{{searchname}}
           <el-button type="primary" slot="append" icon="el-icon-search" @click="search">搜索</el-button>
         </el-input>
       </div>
@@ -50,7 +50,7 @@
       <el-table-column type="" width="20">
       </el-table-column>
       <!-- 度量名称 -->
-        <el-table-column label="度量名称" min-width="25%">
+        <el-table-column label="度量名称" width="300">
           <template slot-scope="scope">
             <span style="margin-left: 10px">
               <el-button type="text"  @click="checkjob">
@@ -59,25 +59,25 @@
           </template>
         </el-table-column>
         <!-- 数据表 -->
-        <el-table-column label="数据表" min-width="20%" >
+        <el-table-column label="数据表" width="300" >
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.FM_TABLENAME}}</span>
           </template>
         </el-table-column>
       <!-- 描述 -->
-        <el-table-column label="描述" min-width="20%">
+        <el-table-column label="描述" width="300">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.FM_DESCRIPTION}}</span>
           </template>
         </el-table-column>
         <!-- 下次执行时间 -->
-        <el-table-column prop="time" label="下次执行时间" min-width="20%">
+        <el-table-column prop="time" label="下次执行时间" width="250">
               <template slot-scope="scope">
                 {{ scope.row["FM_NEXTEXECUTIONTIME"]}}
               </template>
             </el-table-column>
         <!-- 执行状态 -->
-        <el-table-column prop="status" label="状态" min-width="10%">
+        <el-table-column prop="status" label="状态" width="100">
               <template slot-scope="scope">
                 <el-button size="small" v-if="scope.row['FM_STATUS']==='暂停'" type="danger" >未开启</el-button>
                 <el-button size="small" v-if="scope.row['FM_STATUS']==='已完成'" type="success" >已完成</el-button>
@@ -86,23 +86,26 @@
               </template>
             </el-table-column>
       <!-- 操作 -->
-        <el-table-column label="操作" width="150px">
+        <el-table-column label="操作" width="200px">
           <template slot-scope="scope">
             <el-button-group>
               <!-- <el-button type="primary" icon="el-icon-view" @click="checkjob"></el-button> -->
+              <!-- 删除任务 -->
               <el-button size="small" type="primary" icon="el-icon-delete" @click="deletejob(scope.row.FM_ID)"></el-button>
+              <!-- 添加即时任务 -->
               <el-tooltip class="item" effect="dark" content="添加即时任务" placement="top-start">
                 <el-button size="small" v-if="scope.row['FM_STATUS']==='等待下次执行'" type="primary" @click="redefine(scope.row.FM_ID)" icon="el-icon-video-play"></el-button>
                 <el-button size="small" v-else-if="scope.row['FM_STATUS']==='暂停'" type="primary" @click="dingshi(scope.row.FM_ID)" icon="el-icon-video-play"></el-button>
                 <el-button size="small" v-else-if="scope.row['FM_STATUS']==='已完成'" type="primary" @click="dingshi(scope.row.FM_ID)" icon="el-icon-circle-check"></el-button>
               </el-tooltip>
+              <!-- 添加定时任务 -->
               <el-tooltip  class="item" effect="dark" content="添加定时任务" placement="top-start">
                 <el-button size="small" type="primary" icon="el-icon-alarm-clock" @click="openjob(scope.row.FM_ID)"></el-button>
               </el-tooltip>
             </el-button-group>
           </template>
         </el-table-column>
-        <el-table-column label="结果" min-width="8%">
+        <el-table-column label="结果" width="80">
           <template slot-scope="scope">
               <el-button size="small" type="success" icon="el-icon-s-data" circle @click="toresult(scope.row.FM_ID,scope.row.FM_MISSIONNAME,scope.row.FM_STATUS)"></el-button>
               </template>
@@ -115,7 +118,7 @@
       <el-pagination
       @current-change="handleCurrentChange"
       :total="total"
-      :current-page="page"
+      :current-page.sync="page"
         background
         layout="prev, pager, next">
       </el-pagination>
@@ -156,8 +159,8 @@ export default {
     // this.handleCurrentChange(1)
     console.log(this.$route.params)
     if (this.$route.params.tablename === undefined) {
-      // this.handleCurrentChange(1)
-      this.handlechange()
+      this.handleCurrentChange(1)
+      // this.handlechange()
     } else {
       this.fromassets()
     }
@@ -165,23 +168,48 @@ export default {
 
   methods: {
     handlechange () {
+      this.page = 1
       console.log(this.radio)
+      if (this.radio === 1) {
+        this.handleCurrentChange(1)
+      } else {
+        this.fenye2(1)
+      }
+    },
+    // 分页
+    fenye (val) {
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/accuracy?page=' + val + '&size=20')
+        .then(res => {
+          console.log('zheshi accuracy')
+          console.log(res)
+          this.tableData = res.data.data
+          this.total = res.data.pages * this.limit
+        })
+    },
+    // 分页2
+    fenye2 (val) {
       const typeEnum = {
         2: 'OD_TPAS',
         3: 'OD_SRMS',
         4: 'OD_YLB'
       }
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/accuracy?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%')
+        .then(res => {
+          console.log('zheshi sousuo')
+          console.log(this.radio)
+          console.log(res)
+          this.tableData = res.data.data
+          this.total = res.data.pages * this.limit
+        })
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
       if (this.radio === 1) {
-        this.handleCurrentChange(1)
+        this.fenye(val)
       } else {
-        axios
-          .get('http://47.94.199.242:5000/api/v1.0/accuracy?page=1&size=20&types=' + typeEnum[this.radio] + '_%')
-          .then(res => {
-            console.log('zheshi sousuo')
-            console.log(this.radio)
-            console.log(res)
-            this.tableData = res.data.data
-          })
+        this.fenye2(val)
       }
     },
     search () {
@@ -255,17 +283,6 @@ export default {
     // 查看结果
     toresult (tableid, missionname, status) {
       this.$router.push({ path: '/resac/' + tableid + '/' + missionname + '/' + status })
-    },
-    // 分页
-    handleCurrentChange (val) {
-      // console.log(`当前页: ${val}`)
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/accuracy?page=' + val + '&size=10')
-        .then(res => {
-          console.log(res.data.data)
-          this.tableData = res.data.data
-          this.total = res.data.pages * this.limit
-        })
     },
     // 从数据实体页而来
     fromassets () {

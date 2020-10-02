@@ -47,7 +47,7 @@
             <el-table-column  label="任务名称" width="300">
               <template slot-scope="scope">{{ scope.row["JS_JOBNAME"] }}</template>
             </el-table-column>
-             <el-table-column label="表名" width="200">
+             <el-table-column label="表名" width="300">
               <template slot-scope="scope">{{scope.row.JS_TABLENAME}}</template>
             </el-table-column>
             <el-table-column label="规则定义" width="150">
@@ -60,7 +60,7 @@
                 <el-button  type="text">{{scope.row.JS_TABLEFIELD}}</el-button>
               </template>
             </el-table-column>
-            <el-table-column prop="time" label="下次执行时间" width="200">
+            <el-table-column prop="time" label="下次执行时间" width="250">
               <template slot-scope="scope">
                 {{ scope.row["JS_NEXTEXECUTIONTIME"]}}
               </template>
@@ -68,7 +68,7 @@
             <el-table-column prop="status" label="状态" width="150">
               <template slot-scope="scope">
                 <el-button size="small" v-if="scope.row['JS_STATUS']==='暂停'" type="danger" >未开启</el-button>
-                <el-button size="small" v-if="scope.row['JS_STATUS']==='已完成'" type="success" >已完成</el-button>
+                <el-button size="small" v-else-if="scope.row['JS_STATUS']==='已完成'" type="success" >已完成</el-button>
                 <el-button size="small" v-else-if="scope.row['JS_STATUS']==='等待下次执行'" type="warning" >待执行</el-button>
                  <!-- <el-button type="danger" plain="">暂停</el-button> -->
               </template>
@@ -78,11 +78,15 @@
                 <!-- 删除任务 -->
                 <el-button size="small" type="primary" icon="el-icon-delete" @click="deletejob(scope.row.JS_ID)"></el-button>
                 <!-- 即时任务 -->
+                <el-tooltip class="item" effect="dark" content="添加即时任务" placement="top-start">
                   <el-button size="small" v-if="scope.row['JS_STATUS']==='暂停'" type="primary" @click="immediately(scope.row.JS_TABLEID)" icon="el-icon-video-play"></el-button>
                   <el-button size="small" v-else-if="scope.row['JS_STATUS']==='等待下次执行'" type="primary" @click="immediately(scope.row.JS_TABLEID)" icon="el-icon-video-play"></el-button>
                   <el-button size="small" v-else-if="scope.row['JS_STATUS']==='已完成'" type="primary" @click="immediately(scope.row.JS_TABLEID)" icon="el-icon-circle-check"></el-button>
+                </el-tooltip>
                 <!-- 定时任务 -->
-                <el-button size="small" type="primary" icon="el-icon-alarm-clock" @click="openjob(scope.row.JS_TABLEID)"></el-button>
+                <el-tooltip class="item" effect="dark" content="添加定时任务" placement="top-start">
+                  <el-button size="small" type="primary" icon="el-icon-alarm-clock" @click="openjob(scope.row.JS_TABLEID)"></el-button>
+                </el-tooltip>
               </el-button-group>
             </el-table-column>
             <el-table-column label="结果">
@@ -98,7 +102,7 @@
       <el-pagination
       @current-change="handleCurrentChange"
       :total="total"
-      :current-page="page"
+      :current-page.sync="page"
         background
         layout="prev, pager, next">
       </el-pagination>
@@ -127,32 +131,57 @@ export default {
   mounted () {
     console.log(this.$route.params)
     if (this.$route.params.tablename === undefined) {
-      // this.handleCurrentChange(1)
-      this.handlechange()
+      this.handleCurrentChange(1)
+      // this.handlechange()
     } else {
       this.fromassets()
     }
   },
   methods: {
     handlechange () {
-      console.log('handlechange')
+      this.page = 1
       console.log(this.radio)
+      if (this.radio === 1) {
+        // this.handleCurrentChange(1)
+        this.fenye(1)
+      } else {
+        this.fenye2(1)
+      }
+    },
+    // 分页
+    fenye (val) {
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/jobs?page=' + val + '&size=20')
+        .then(res => {
+          console.log('zheshi assets')
+          console.log(res)
+          this.tableData = res.data.data
+          this.total = res.data.pages * this.limit
+        })
+    },
+    // 分页2
+    fenye2 (val) {
       const typeEnum = {
         2: 'OD_TPAS',
         3: 'OD_SRMS',
         4: 'OD_YLB'
       }
+      axios
+        .get('http://47.94.199.242:5000/api/v1.0/jobs?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%')
+        .then(res => {
+          console.log('zheshi sousuo')
+          console.log(this.radio)
+          console.log(res)
+          this.tableData = res.data.data
+          this.total = res.data.pages * this.limit
+        })
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
       if (this.radio === 1) {
-        this.handleCurrentChange(1)
+        this.fenye(val)
       } else {
-        axios
-          .get('http://47.94.199.242:5000/api/v1.0/jobs?page=1&size=20&types=' + typeEnum[this.radio] + '_%')
-          .then(res => {
-            console.log('zheshi sousuo')
-            console.log(this.radio)
-            console.log(res)
-            this.tableData = res.data.data
-          })
+        this.fenye2(val)
       }
     },
     // 搜索框根据表名搜索
@@ -163,17 +192,6 @@ export default {
           console.log('zheshi sousuo')
           console.log(res)
           this.tableData = res.data.data
-        })
-    },
-    // 分页
-    handleCurrentChange (val) {
-      // console.log(`当前页: ${val}`)
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/jobs?page=' + val + '&size=10')
-        .then(res => {
-          console.log(res)
-          this.tableData = res.data.data
-          this.total = res.data.pages * this.limit
         })
     },
     // 从数据实体页而来
