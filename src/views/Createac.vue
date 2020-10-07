@@ -82,8 +82,8 @@ export default {
     axios
       .get('http://47.94.199.242:5000/api/v1.0/detect')
       .then(res => {
-        if (res.status === 200) {
-          // console.log(res.data.data)
+        if (res.data.code === '200') {
+          console.log(res)
           this.dataList = res.data.data
         }
       }
@@ -106,6 +106,7 @@ export default {
       this.job_name = this.ruleForm.name
       this.job_description = this.ruleForm.description
       this.tables = this.ruleForm.table.value // id
+      console.log(this.tables)
       console.log(this.job_name)
       console.log(this.job_description)
       // console.log(this.)

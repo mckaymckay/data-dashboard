@@ -155,8 +155,15 @@ export default {
         .then(res => {
           console.log('zheshi assets')
           console.log(res)
-          this.tableData = res.data.data
-          this.total = res.data.pages * this.limit
+          if (res.data.code === '200') {
+            this.tableData = res.data.data
+            this.total = res.data.pages * this.limit
+          } else {
+            console.log(res.data.message)
+            this.$alert(res.data.message, '结果', {
+              confirmButtonText: '确定'
+            })
+          }
         })
     },
     // 分页2
@@ -172,8 +179,15 @@ export default {
           console.log('zheshi sousuo')
           console.log(this.radio)
           console.log(res)
-          this.tableData = res.data.data
-          this.total = res.data.pages * this.limit
+          if (res.data.code === '200') {
+            this.tableData = res.data.data
+            this.total = res.data.pages * this.limit
+          } else {
+            console.log(res.data.message)
+            this.$alert(res.data.message, '结果', {
+              confirmButtonText: '确定'
+            })
+          }
         })
     },
     handleCurrentChange (val) {
@@ -251,6 +265,19 @@ export default {
         .post('http://47.94.199.242:5000/api/v1.0/jobsImmediately?tableid=' + tableid + '&time=' + time)
         .then(res => {
           console.log(res)
+          if (res.data.code === '200') {
+            this.$message({
+              type: 'success',
+              message: '开启成功!'
+            })
+            this.handleCurrentChange(1)
+            // location.reload()
+          } else {
+            this.$message({
+              type: 'info',
+              message: res.data.message
+            })
+          }
         })
     },
     // 开启任务

@@ -22,7 +22,7 @@
         <div class="seven_echarts"  id="seven"></div>
       </div>
       <el-divider><i class="el-icon-loading"></i>
-      <span style="color:#909399">这是分割线</span>
+      <span style="color:#909399"> 我 是 分 割 线 </span>
       <i class="el-icon-loading"></i></el-divider>
       <!-- 表格 -->
       <div class="table">
@@ -198,6 +198,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.$route.params)
     this.get_data()
     this.get_echarts()
   },
@@ -213,14 +214,14 @@ export default {
       this.missionname = this.$route.params.missionname
       var tableid = this.$route.params.tableid
       // var status = this.$route.params.status
+      // 获取x轴时间
+      const ddx = []
+      // 获取y轴数值
+      const ddy = [0]
       axios
         .get('http://47.94.199.242:5000/api/v1.0/accuracyResult?tableid=' + tableid)
         .then(res => {
           console.log(res)
-          // 获取x轴时间
-          const ddx = []
-          // 获取y轴数值
-          const ddy = []
           this.getnumber = res.data.data
           for (let i = 0; i < this.getnumber.length; i++) {
             ddx.push(this.getnumber[i].FL_UPDATETIME)

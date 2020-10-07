@@ -94,7 +94,7 @@ export default {
         result.push(day(dd).add(i, 'month').format('YYYY-MM-DD HH:mm:ss'))
         this.timeList[i].value = result[i]
       }
-      console.log(result)
+      // console.log(result)
     },
     back () {
       this.$router.push({ path: '/job/' })
@@ -103,9 +103,11 @@ export default {
       console.log(this.timeList)
       const result = {
         table_id: this.timeList[0].id,
-        time: this.timeList.map(v => ({
-          JP_EXECUTIONTIME: v.value
-        }))
+        time: this.timeList.map(v => {
+          return {
+            JP_EXECUTIONTIME: v.value
+          }
+        }).filter(v => v.JP_EXECUTIONTIME !== null)
       }
       console.log(result)
       axios({
@@ -120,6 +122,10 @@ export default {
             this.$alert('提交成功', '结果', {
               confirmButtonText: '确定',
               callback: () => this.$router.push({ path: '/job/' })
+            })
+          } else {
+            this.$alert(res.data.message, '结果', {
+              confirmButtonText: '确定'
             })
           }
         })

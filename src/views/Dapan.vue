@@ -70,16 +70,14 @@
     </div>
     <div class="body flex container">
       <div class="flex-1 data-task">
-        <!-- <div class="title" style="color:#303133">数据任务</div> -->
         <div class="instance-status_monitor">
           <div class="table-title">实例状态监控</div>
-          <!-- <template> -->
-          <el-table :data="tableData2" height="180px">
-            <el-table-column label="检测类型">完整性检测</el-table-column>
-            <!-- <el-table-column prop="total" label="总数"></el-table-column> -->
-            <el-table-column label="执行时间">2020-09-24 00:00:00</el-table-column>
-            <el-table-column label="执行状态"><el-button type="info" >未执行</el-button></el-table-column>
-            <!-- <el-table-column prop="end" label="终止"></el-table-column> -->
+          <el-table :data="tableData4" :cell-style="handlechange" stripe>
+            <el-table-column label="检测类型" prop="type" min-width="26%"></el-table-column>
+            <el-table-column label="总数" prop="total" min-width="19%"></el-table-column>
+            <el-table-column label="成功" prop="success" min-width="19%"></el-table-column>
+            <el-table-column label="失败" prop="failed" min-width="19%"></el-table-column>
+            <el-table-column label="结束" prop="ended" min-width="19%"></el-table-column>
           </el-table>
         </div>
       </div>
@@ -105,62 +103,82 @@
         </el-table>
       </div>
     </div>
-    <el-dialog title="质量改进" center :visible.sync="dialogVisible" width="40%">
-      <el-form ref="form" label-width="80px">
-        <el-form-item label="问题字段">
-          <el-input></el-input>
-        </el-form-item>
-        <el-form-item label="问题描述">
-          <el-input></el-input>
-        </el-form-item>
-        <el-form-item label="更改建议">
-          <el-input></el-input>
-        </el-form-item>
-        <el-form-item label="填充值">
-          <el-input></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 <script>
 import axios from 'axios'
-import ajpg from '../assets/a.jpg'
-const tableData1 = []
-const tableData2 = []
-const tableData3 = []
+// import ajpg from '../assets/a.jpg'
 export default {
   data () {
     return {
-      tableData1,
-      tableData2,
-      tableData3,
-      ajpg,
+      tableData1: [],
+      tableData2: [],
+      tableData3: [],
+      // ajpg,
       dialogVisible: false,
-      tablenumber: null
+      tablenumber: null,
+      tableData4: [{
+        type: '波动检测',
+        total: '100',
+        success: '100',
+        failed: '100',
+        ended: '100'
+      },
+      {
+        type: '实体检测',
+        total: '100',
+        success: '100',
+        failed: '100',
+        ended: '100'
+      }]
     }
   },
 
   mounted () {
     axios.get('http://47.94.199.242:5000/api/v1.0/tablesize').then((res) => {
-      console.log(res.data.data)
+      // console.log(res.data.data)
       this.tableData1 = res.data.data
       this.tableData2 = res.data.data
     })
     axios.get(' http://47.94.199.242:5000/api/v1.0/problemlist').then((res) => {
-      console.log(res.data.data)
+      // console.log(res.data.data)
       this.tableData3 = res.data.data
     })
     axios.get(' http://47.94.199.242:5000/api/v1.0/tablenumber').then((res) => {
-      console.log(res.data.data)
+      // console.log(res.data.data)
       this.tablenumber = res.data.data
+    })
+    axios.get(' http://47.94.199.242:5000/api/v1.0/jobstatus').then((res) => {
+      // console.log(typeof (res.data.data)) // obj
+      // console.log(res.data.data)
+      // console.log(this.tableData4)
+      this.tableData4[0].total = res.data.data[3].JOBTOTAL
+      this.tableData4[0].success = res.data.data[0].JOBSUCCESS
+      this.tableData4[0].failed = res.data.data[1].JOBFAILD
+      this.tableData4[0].ended = res.data.data[2].JOBSTOP
+      this.tableData4[1].total = res.data.data[7].ACCTOTAL
+      this.tableData4[1].success = res.data.data[4].ACCSUCCESS
+      this.tableData4[1].failed = res.data.data[5].ACCFAILD
+      this.tableData4[1].ended = res.data.data[6].ACCSTOP
     })
   },
   methods: {
+    // 修改的样式
+    handlechange (row, column, rowIndex, columnIndex) {
+      if (row.column.label === '检测类型') {
+        return 'color:rgb(64, 158, 255)'
+      } else if (row.column.label === '总数') {
+        return 'color:#F56C6C'
+      } else if (row.column.label === '成功') {
+        return 'color:#67C23A'
+      } else if (row.column.label === '失败') {
+        return 'color:#d3d4d6'
+      } else if (row.column.label === '结束') {
+        return 'color:#E6A23C'
+      } else {
+        return ''
+      }
+    }
 
   }
 }
@@ -194,7 +212,7 @@ export default {
   .flex-1 {
     flex: 1 1 auto;
     min-width: 0;
-    width: 250px;
+    width: 50%;
   }
   .flex-2 {
     flex: 1 1 auto;
@@ -224,7 +242,7 @@ export default {
     margin-bottom: 20px;
   }
   .data-task {
-    width: 400px;
+    width: 50%;
     margin-right: 10px;
   }
   .person-info {

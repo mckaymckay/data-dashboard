@@ -172,11 +172,17 @@ export default {
         axios
           .delete('http://47.94.199.242:5000/api/v1.0/measure/' + tableid)
           .then(res => {
-            console.log(res)
-            if (res.status === 200) {
+            console.log(res.data)
+            if (res.data.code === '200') {
               this.$message({
                 type: 'success',
                 message: '已重置!'
+              })
+            } else if (res.data.code === '5003') {
+              console.log(11)
+              this.$message({
+                type: 'warning',
+                message: '任务尚未结束，无法删除!'
               })
             }
             // location.reload()

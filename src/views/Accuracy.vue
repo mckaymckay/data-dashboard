@@ -50,7 +50,7 @@
       <el-table-column type="" width="20">
       </el-table-column>
       <!-- 度量名称 -->
-        <el-table-column label="度量名称" width="300">
+        <el-table-column label="度量名称" min-width="32%">
           <template slot-scope="scope">
             <span style="margin-left: 10px">
               <el-button type="text"  @click="checkjob">
@@ -59,34 +59,34 @@
           </template>
         </el-table-column>
         <!-- 数据表 -->
-        <el-table-column label="数据表" width="300" >
+        <el-table-column label="数据表" min-width="30%">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.FM_TABLENAME}}</span>
           </template>
         </el-table-column>
       <!-- 描述 -->
-        <el-table-column label="描述" width="300">
+        <!-- <el-table-column label="描述" width="300">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.FM_DESCRIPTION}}</span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <!-- 下次执行时间 -->
-        <el-table-column prop="time" label="下次执行时间" width="250">
+        <!-- <el-table-column prop="time" label="下次执行时间" width="250">
               <template slot-scope="scope">
                 {{ scope.row["FM_NEXTEXECUTIONTIME"]}}
               </template>
-            </el-table-column>
+            </el-table-column> -->
         <!-- 执行状态 -->
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="status" label="状态"  min-width="12%">
               <template slot-scope="scope">
                 <el-button size="small" v-if="scope.row['FM_STATUS']==='暂停'" type="danger" >未开启</el-button>
                 <el-button size="small" v-if="scope.row['FM_STATUS']==='已完成'" type="success" >已完成</el-button>
-                <el-button size="small" v-else-if="scope.row['FM_STATUS']==='等待下次执行'" type="success" >待执行</el-button>
+                <el-button size="small" v-else-if="scope.row['FM_STATUS']==='等待下次执行'" type="warning" >待执行</el-button>
                  <!-- <el-button type="danger" plain="">暂停</el-button> -->
               </template>
             </el-table-column>
       <!-- 操作 -->
-        <el-table-column label="操作" width="200px">
+        <el-table-column label="操作" min-width="18%">
           <template slot-scope="scope">
             <el-button-group>
               <!-- <el-button type="primary" icon="el-icon-view" @click="checkjob"></el-button> -->
@@ -105,7 +105,7 @@
             </el-button-group>
           </template>
         </el-table-column>
-        <el-table-column label="结果" width="80">
+        <el-table-column label="结果" min-width="8%">
           <template slot-scope="scope">
               <el-button size="small" type="success" icon="el-icon-s-data" circle @click="toresult(scope.row.FM_ID,scope.row.FM_MISSIONNAME,scope.row.FM_STATUS)"></el-button>
               </template>
@@ -242,9 +242,22 @@ export default {
     },
     dingshi (tableid) {
       axios
-        .post('http://47.94.199.242:5000/api/v1.0/jobsImmediately?tableid=' + tableid)
+        .post('http://47.94.199.242:5000/api/v1.0/accuracymissionImmediately?tableid=' + tableid)
         .then(res => {
-          console.log(res.data.data)
+          console.log(res)
+          if (res.data.code === '200') {
+            this.$message({
+              type: 'success',
+              message: '开启成功!'
+            })
+            this.handleCurrentChange(1)
+            // location.reload()
+          } else {
+            this.$message({
+              type: 'info',
+              message: res.data.message
+            })
+          }
         })
     },
     // 删除任务

@@ -75,7 +75,7 @@ export default {
       // var jobid = this.$route.params.jobid
       // var status = this.$route.params.status
       axios
-        .get('http://47.94.199.242:5000/api/v1.0/jobs/' + this.$route.params.jobid + '?page=1&size=10')
+        .get('http://47.94.199.242:5000/api/v1.0/jobs/' + this.$route.params.jobid + '?page=1&size=1000')
         .then(res => {
           console.log(res)
           this.tableData = res.data.data

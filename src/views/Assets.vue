@@ -47,7 +47,7 @@
           </template>
         </el-table-column>
         <!-- 数据量 -->
-        <el-table-column label="数据量" width="100">
+        <el-table-column label="数据量(条)" width="100">
           <template slot-scope="scope">
             <span style="margin-left: 10px">{{ scope.row.TM_HISTORYNUMBER }}</span>
           </template>

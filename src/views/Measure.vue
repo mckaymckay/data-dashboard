@@ -144,6 +144,11 @@ export default {
                 confirmButtonText: '确定'
               })
               this.$router.push({ path: '/measure1/' })
+            } else {
+              console.log(res.data.message)
+              this.$alert(res.data.message, '结果', {
+                confirmButtonText: '确定'
+              })
             }
           })
           .catch(err => {
