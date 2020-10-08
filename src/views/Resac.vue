@@ -217,15 +217,22 @@ export default {
       // 获取x轴时间
       const ddx = []
       // 获取y轴数值
-      const ddy = [0]
+      const ddy = []
       axios
         .get('http://47.94.199.242:5000/api/v1.0/accuracyResult?tableid=' + tableid)
         .then(res => {
           console.log(res)
           this.getnumber = res.data.data
           for (let i = 0; i < this.getnumber.length; i++) {
-            ddx.push(this.getnumber[i].FL_UPDATETIME)
-            ddy.push(this.getnumber[i].FL_HISTORYNUMBER)
+            if (this.getnumber[i].FL_STATUS !== '未执行') {
+              ddx.push(this.getnumber[i].FL_UPDATETIME)
+              var num = this.getnumber[i].FL_HISTORYNUMBER
+              if (num === '失败' || num === null) {
+                ddy.push(0)
+              } else {
+                ddy.push(parseInt(this.getnumber[i].FL_HISTORYNUMBER))
+              }
+            }
           }
           console.log(ddx)
           console.log(ddy)

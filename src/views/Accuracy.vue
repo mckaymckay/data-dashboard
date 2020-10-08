@@ -94,9 +94,9 @@
               <el-button size="small" type="primary" icon="el-icon-delete" @click="deletejob(scope.row.FM_ID)"></el-button>
               <!-- 添加即时任务 -->
               <el-tooltip class="item" effect="dark" content="添加即时任务" placement="top-start">
-                <el-button size="small" v-if="scope.row['FM_STATUS']==='等待下次执行'" type="primary" @click="redefine(scope.row.FM_ID)" icon="el-icon-video-play"></el-button>
-                <el-button size="small" v-else-if="scope.row['FM_STATUS']==='暂停'" type="primary" @click="dingshi(scope.row.FM_ID)" icon="el-icon-video-play"></el-button>
-                <el-button size="small" v-else-if="scope.row['FM_STATUS']==='已完成'" type="primary" @click="dingshi(scope.row.FM_ID)" icon="el-icon-circle-check"></el-button>
+                <el-button size="small" v-if="scope.row['FM_STATUS']==='等待下次执行'" type="primary" icon="el-icon-video-play"></el-button>
+                <el-button size="small" v-else-if="scope.row['FM_STATUS']==='暂停'" type="primary" @click="imme(scope.row.FM_ID)" icon="el-icon-video-play"></el-button>
+                <el-button size="small" v-else-if="scope.row['FM_STATUS']==='已完成'" type="primary" @click="imme(scope.row.FM_ID)" icon="el-icon-circle-check"></el-button>
               </el-tooltip>
               <!-- 添加定时任务 -->
               <el-tooltip  class="item" effect="dark" content="添加定时任务" placement="top-start">
@@ -240,9 +240,10 @@ export default {
       console.log(day(dd).add(5, 'minute').format('YYYY-MM-DD HH:mm:ss'))
       console.log(day(dd).format('YYYY-MM-DD HH:mm:ss'))
     },
-    dingshi (tableid) {
+    imme (tableid) {
+      console.log(tableid)
       axios
-        .post('http://47.94.199.242:5000/api/v1.0/accuracymissionImmediately?tableid=' + tableid)
+        .post('http://127.0.0.1:5000/api/v1.0/accuracymissionImmediately?tableid=' + tableid)
         .then(res => {
           console.log(res)
           if (res.data.code === '200') {

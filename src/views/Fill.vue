@@ -118,14 +118,21 @@ export default {
     },
     submitForm (formName) {
       this.modifyvalue = this.ruleForm.fillkey
-      console.log(this.modifyvalue)
-      if (!this.modifyvalue) {
+      console.log(this.modifyvalue.length)
+      // 去除字符串的头尾空格
+      if (!this.modifyvalue.trim()) {
         this.$alert('请输入填充值', '提示', {
           confirmButtonText: '确定'
         })
       }
+      console.log(this.radio)
+      // if (this.radio === 2) {
+      //   this.ruleForm.fillkey = ''
+      // } else {
+      //   this.ruleForm.fillkey = '系统自动填充' + this.$route.params.fieldname
+      // }
       axios
-        .put('http://47.94.199.242:5000/api/v1.0/quality?tableid=' + this.tableid + '&fieldname=' + this.$route.params.fieldname + '&modifyvalue=' + this.modifyvalue)
+        .put('http://127.0.0.1:5000/api/v1.0/quality?tableid=' + this.tableid + '&fieldname=' + this.$route.params.fieldname + '&modifyvalue=' + this.modifyvalue)
         .then(res => {
           if (res.data.code === '200') {
             console.log(res)

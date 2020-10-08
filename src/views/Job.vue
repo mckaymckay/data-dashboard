@@ -262,7 +262,7 @@ export default {
       var time = day(dd).format('YYYY-MM-DD HH:mm:ss')
       console.log(time)
       axios
-        .post('http://47.94.199.242:5000/api/v1.0/jobsImmediately?tableid=' + tableid + '&time=' + time)
+        .post('http://127.0.0.1:5000/api/v1.0/jobsImmediately?tableid=' + tableid + '&time=' + time)
         .then(res => {
           console.log(res)
           if (res.data.code === '200') {

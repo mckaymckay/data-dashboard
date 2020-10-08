@@ -131,7 +131,7 @@ export default {
       }
       if (result.data.length !== 0) {
         axios({
-          url: 'http://47.94.199.242:5000/api/v1.0/measure',
+          url: 'http://127.0.0.1:5000/api/v1.0/measure',
           method: 'put',
           headers: { 'Content-Type': 'application/json' },
           data: result
