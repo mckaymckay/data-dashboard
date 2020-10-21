@@ -48,7 +48,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+// import axios from 'axios'
+import request from '../request'
 export default {
   data () {
     return {
@@ -79,8 +80,9 @@ export default {
   },
 
   mounted () {
-    axios
-      .get('http://47.94.199.242:5000/api/v1.0/detect')
+    request({
+      url: '/detect'
+    })
       .then(res => {
         if (res.data.code === '200') {
           console.log(res)
@@ -122,8 +124,10 @@ export default {
         alert('请选择数据表')
         return false
       }
-      axios
-        .post('http://47.94.199.242:5000/api/v1.0/accuracy?tableid=' + this.ruleForm.table.value + '&missionname=' + this.job_name + '&description=' + this.job_description)
+      request({
+        url: '/accuracy?tableid=' + this.ruleForm.table.value + '&missionname=' + this.job_name + '&description=' + this.job_description,
+        method: 'post'
+      })
         .then(res => {
           // if (res.status === 200) {
           console.log(res)

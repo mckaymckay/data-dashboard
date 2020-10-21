@@ -29,6 +29,7 @@
             <el-radio :label="2">教师档案库</el-radio>
             <el-radio :label="3">教师课题库</el-radio>
             <el-radio :label="4">云录播</el-radio>
+            <el-radio :label="5">数据分析</el-radio>>
           </el-radio-group>
         </template>
       </div>
@@ -111,7 +112,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+// import axios from 'axios'
+import request from '../request'
 import day from 'dayjs'
 export default {
   data () {
@@ -150,8 +152,9 @@ export default {
     },
     // 分页
     fenye (val) {
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/jobs?page=' + val + '&size=20')
+      request({
+        url: '/jobs?page=' + val + '&size=20'
+      })
         .then(res => {
           console.log('zheshi assets')
           console.log(res)
@@ -173,8 +176,9 @@ export default {
         3: 'OD_SRMS',
         4: 'OD_YLB'
       }
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/jobs?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%')
+      request({
+        url: '/jobs?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%'
+      })
         .then(res => {
           console.log('zheshi sousuo')
           console.log(this.radio)
@@ -200,8 +204,9 @@ export default {
     },
     // 搜索框根据表名搜索
     search () {
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/searchjob?tablename=' + this.input1)
+      request({
+        url: '/searchjob?tablename=' + this.input1
+      })
         .then(res => {
           console.log('zheshi sousuo')
           console.log(res)
@@ -211,8 +216,9 @@ export default {
     // 从数据实体页而来
     fromassets () {
       this.table_name = this.$route.params.tablename
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/searchjob?tablename=' + this.table_name)
+      request({
+        url: '/searchjob?tablename=' + this.table_name
+      })
         .then(res => {
           console.log(res)
           this.tableData = res.data.data
@@ -231,8 +237,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        axios
-          .delete('http://47.94.199.242:5000/api/v1.0/jobs/' + jobid)
+        request({
+          url: '/jobs/' + jobid,
+          method: 'delete'
+        })
           .then(res => {
             console.log(res)
             if (res.data.code === '200') {
@@ -261,8 +269,10 @@ export default {
       var dd = new Date()
       var time = day(dd).format('YYYY-MM-DD HH:mm:ss')
       console.log(time)
-      axios
-        .post('http://127.0.0.1:5000/api/v1.0/jobsImmediately?tableid=' + tableid + '&time=' + time)
+      request({
+        url: '/jobsImmediately?tableid=' + tableid + '&time=' + time,
+        method: 'post'
+      })
         .then(res => {
           console.log(res)
           if (res.data.code === '200') {

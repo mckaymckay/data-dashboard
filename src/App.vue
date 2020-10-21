@@ -44,19 +44,6 @@
       </el-menu>
     </div>
     <div class="main">
-      <!-- <el-menu
-        :default-active="activeIndex"
-        mode="horizontal"
-        :router="true"
-        @select="handleSelect"
-        background-color="#041528"
-        text-color="#fff"
-        active-text-color="#"
-      >
-        <el-menu-item index="/"></el-menu-item>
-        <el-menu-item index="/measure"></el-menu-item>
-        <el-menu-item index="/job"></el-menu-item>
-      </el-menu> -->
       <div class="header"></div>
       <router-view />
     </div>

@@ -43,8 +43,9 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import day from 'dayjs'
+import request from '../request'
 export default {
   data () {
     return {
@@ -110,8 +111,8 @@ export default {
         }).filter(v => v.JP_EXECUTIONTIME !== null)
       }
       console.log(result)
-      axios({
-        url: 'http://47.94.199.242:5000/api/v1.0/jobs',
+      request({
+        url: '/jobs',
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         data: result

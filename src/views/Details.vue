@@ -49,20 +49,12 @@
           </el-table-column>
         </el-table>
     </div>
-    <!-- 操作 -->
-    <!-- <div class="pagination_parent">
-      <div class="pagination">
-        <el-button-group>
-          <el-button type="primary" icon="el-icon-arrow-left" @click="back">返回</el-button>
-          <el-button type="primary" @click="toperfection()">详细  <i class="el-icon-arrow-right"></i></el-button>
-        </el-button-group>
-      </div>
-    </div> -->
   </div>
 </template>
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import dayjs from 'dayjs'
+import request from '../request'
 export default {
   data () {
     return {
@@ -77,9 +69,9 @@ export default {
     this.table_name = this.$route.params.tablename
     var tableid = this.$route.params.tableid
     console.log(this.$route.params.tableid)
-    axios
-      // .get('http://localhost:38080/api/v1/metadata/hive/dbs/tables')
-      .get('http://47.94.199.242:5000/api/v1.0/assets/' + tableid + '?page=1&size=50')
+    request({
+      url: '/assets/' + tableid + '?page=1&size=50'
+    })
       .then(res => {
         console.log('zheshi details')
         console.log(res.data.data)

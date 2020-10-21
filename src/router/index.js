@@ -5,11 +5,10 @@ import VueRouter from 'vue-router'
 import Job from '../views/Job.vue'
 import Assets from '../views/Assets.vue'
 import Details from '../views/Details.vue'
-import Perfection from '../views/Perfection.vue'
+// import Perfection from '../views/Perfection.vue'
 import Measure from '../views/Measure.vue'
 import Accuracy from '../views/Accuracy.vue'
 import Successjob from '../views/Successjob.vue'
-import Addaccuracy from '../views/Addaccuracy.vue'
 import Assessment from '../views/Assessment.vue'
 import Fill from '../views/Fill.vue'
 import Dapan from '../views/Dapan.vue'
@@ -49,11 +48,6 @@ const routes = [
     // path: '/details',
     name: 'Details',
     component: Details
-  },
-  {
-    path: '/perfection/:tableid/:tablename',
-    name: 'Perfection',
-    component: Perfection
   },
   {
     path: '/measure1',
@@ -113,11 +107,6 @@ const routes = [
     path: '/test',
     name: 'Test',
     component: Test
-  },
-  {
-    path: '/addaccuracy',
-    name: 'Addaccuracy',
-    component: Addaccuracy
   },
   {
     path: '/assessment',

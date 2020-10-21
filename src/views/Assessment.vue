@@ -27,6 +27,7 @@
             <el-radio :label="2">教师档案库</el-radio>
             <el-radio :label="3">教师课题库</el-radio>
             <el-radio :label="4">云录播</el-radio>
+            <el-radio :label="5">数据分析</el-radio>>
           </el-radio-group>
         </template>
       </div>
@@ -56,19 +57,45 @@
         </el-table-column>
       <!-- 操作 -->
         <el-table-column label="操作" min-width="20%">
-          <template slot-scope="scope">
-            <span>
-              <el-button v-if="scope.row.PS_PROBLEM==='含有空值'" @click="tofill(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)" size="small" type="primary" plain>更改</el-button>
-              <el-button v-else-if="scope.row.PS_PROBLEM==='不符合标准值'" @click="tostandard(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)" size="small" type="primary" plain>更改</el-button>
-              <el-button v-else-if="scope.row.PS_PROBLEM==='含有奇异值'" @click="tostandard1(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)" size="small" type="primary" plain>更改</el-button>
-            </span>
-          </template>
+          <el-button-group slot-scope="scope">
+            <el-tooltip class="item" effect="dark" content="添加即时任务" placement="top-start">
+              <!-- FM_STATUS：0-没问题，无需更改；1-有问题，需要更改；2-已改进，无需更改 -->
+              <el-button v-if="scope.row.FM_STATUS==='1'&scope.row.PS_PROBLEM==='含有空值'" @click="tofill(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)" size="small" type="primary" plain>更改</el-button>
+              <el-button v-else-if="scope.row.FM_STATUS==='1'&scope.row.PS_PROBLEM==='不符合标准值'" @click="tostandard(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)" size="small" type="primary" plain>更改</el-button>
+              <el-button v-else-if="scope.row.FM_STATUS==='1'&scope.row.PS_PROBLEM==='含有奇异值'" @click="tostandard1(scope.row.TM_ID,scope.row.TM_TABLENAME,scope.row.FM_TABLEFIELD)" size="small" type="primary" plain>更改</el-button>
+              <el-button v-else type="success" plain @click="handlechoice" size="small">无需更改</el-button>
+            </el-tooltip>
+            <!-- 问题展示 -->
+            <el-popover
+              placement="right"
+              width="1000"
+              trigger="click">
+              <el-table
+              :data="gridData"
+              height="400">
+
+                <el-table-column
+                      v-for="(value,key,index) in items"
+                      :key="index"
+                      :label="key"
+                    >
+                  <template slot-scope="scope">
+                  {{scope.row[key]}}
+                  </template>
+                </el-table-column>
+              </el-table>
+              <el-button size="small" slot="reference" type="primary" @click="detail(scope.row.TM_ID,scope.row.FM_TABLEFIELD)" plain>详情</el-button>
+            </el-popover>
+            <!-- <el-button size="small" type="primary" @click="detail(scope.row.TM_ID,scope.row.FM_TABLEFIELD)" plain>详情</el-button> -->
+          </el-button-group>
         </el-table-column>
+
         <!-- 是否更改完成 -->
         <el-table-column label="是否更改完成" min-width="10%">
-          <template slot-scope="">
+          <template slot-scope="scope">
             <span style="margin-left: 10px;color:#409EFF">
-              <el-button size="small" type="success" icon="el-icon-check" circle></el-button>
+              <el-button v-if="scope.row.FM_STATUS==='0'||scope.row.FM_STATUS==='2'" size="small" type="success" icon="el-icon-check" circle></el-button>
+              <el-button v-else-if="scope.row.FM_STATUS==='1'" size="small" type="info" icon="el-icon-close" circle></el-button>
               </span>
           </template>
         </el-table-column>
@@ -89,7 +116,7 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+import request from '../request'
 export default {
   data () {
     return {
@@ -101,7 +128,10 @@ export default {
       page: 1,
       total: 0,
       limit: 10,
-      radio: 1
+      radio: 1,
+      items: [],
+      // 表数据
+      gridData: []
     }
   },
 
@@ -127,10 +157,11 @@ export default {
     },
     // 分页
     fenye (val) {
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/problemlist?page=' + val + '&size=20')
+      request({
+        url: '/problemlist?page=' + val + '&size=20'
+      })
         .then(res => {
-          console.log('zheshi assets')
+          console.log('assessment')
           console.log(res)
           this.tableData = res.data.data
           this.total = res.data.pages * this.limit
@@ -143,8 +174,9 @@ export default {
         3: 'OD_SRMS',
         4: 'OD_YLB'
       }
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/problemlist?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%')
+      request({
+        url: '/problemlist?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%'
+      })
         .then(res => {
           console.log('zheshi sousuo')
           console.log(this.radio)
@@ -161,21 +193,31 @@ export default {
         this.fenye2(val)
       }
     },
+    // 空值改进
     tofill (tableid, tablename, fieldname) {
       this.$router.push({ path: '/fill/' + tableid + '/' + tablename + '/' + fieldname })
     },
+    // 标准化改进
     tostandard (tableid, tablename, fieldname) {
       this.$router.push({ path: '/standard/' + tableid + '/' + tablename + '/' + fieldname })
     },
+    // 奇异值改进
     tostandard1 (tableid, tablename, fieldname) {
       this.$router.push({ path: '/standard/' + tableid + '/' + tablename + '/' + fieldname })
+    },
+    // 无需改进
+    handlechoice () {
+      this.$alert('此问题已修改完成', '提示', {
+        confirmButtonText: '确定'
+      })
     },
     // 从数据实体而来
     fromassets () {
       this.table_name = this.$route.query.tablename
       console.log(this.table_name)
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/searchresult?tablename=' + this.table_name)
+      request({
+        url: '/searchresult?tablename=' + this.table_name
+      })
         .then(res => {
           console.log(res)
           this.tableData = res.data.data
@@ -183,11 +225,29 @@ export default {
     },
     // 根据表名搜索
     search () {
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/searchresult?tablename=' + this.input1)
+      request({
+        url: '/searchresult?tablename=' + this.input1
+      })
         .then(res => {
           console.log(res)
           this.tableData = res.data.data
+        })
+    },
+    // 查看问题列表详情
+    detail (tableid, fieldname) {
+      console.log(tableid, fieldname)
+      request({
+        url: '/problemfieldlist?tableid=' + tableid + '&fieldname=' + fieldname
+      })
+        .then(res => {
+          console.log(res.data.data)
+          this.gridData = res.data.data
+
+          // console.log(this.gridData.length)
+          this.items = this.gridData[0]
+          Object.keys(this.items).forEach(key => {
+            console.log(key)
+          })
         })
     },
     goBack () {

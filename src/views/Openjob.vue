@@ -46,8 +46,9 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import day from 'dayjs'
+import request from '../request'
 export default {
   data () {
     return {
@@ -117,8 +118,8 @@ export default {
         })
       }
       console.log(arr)
-      axios({
-        url: 'http://47.94.199.242:5000/api/v1.0/accuracymission',
+      request({
+        url: '/accuracymission',
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         data: {

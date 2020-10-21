@@ -23,6 +23,7 @@
             <el-radio :label="2">教师档案库</el-radio>
             <el-radio :label="3">教师课题库</el-radio>
             <el-radio :label="4">云录播</el-radio>
+            <el-radio :label="5">数据分析</el-radio>>
           </el-radio-group>
         </template>
       </div>
@@ -61,9 +62,9 @@
         <!-- 数据波动 -->
         <el-table-column label="数据波动" width="150">
           <template slot-scope="scope">
-            <span style="margin-left: 10px" @click="toaccuracy(scope.row.TM_TABLENAME)">
-              <el-button type="text" v-if="scope.row['TM_ISACCURACY']==='0'">未创建</el-button>
-              <el-button type="text" v-else-if="scope.row['TM_ISACCURACY']==='1'">{{scope.row.TM_ACCURACYCOMPLETIONRATE*100}}%</el-button>
+            <span style="margin-left: 10px">
+              <el-button type="text" v-if="scope.row['TM_ISACCURACY']==='0'" @click="handle1">未创建</el-button>
+              <el-button type="text" v-else-if="scope.row['TM_ISACCURACY']==='1'"  @click="toaccuracy(scope.row.TM_TABLENAME)">{{scope.row.TM_ACCURACYCOMPLETIONRATE*100}}%</el-button>
               </span>
           </template>
         </el-table-column>
@@ -83,7 +84,7 @@
         </el-table-column><el-table-column label="检测任务执行情况" width="150">
           <template slot-scope="scope">
               <span style="margin-left: 10px">
-                <el-button type="text" v-if="scope.row['TM_ISDEFINED']==='0'" @click="tojob(scope.row.TM_TABLENAME)"></el-button>
+                <el-button type="text" v-if="scope.row['TM_ISDEFINED']==='0'"></el-button>
                 <el-button type="text" v-else-if="scope.row['TM_ISDEFINED']==='1'" @click="tojob(scope.row.TM_TABLENAME)">{{scope.row.measure_rate}}%已完成</el-button>
               </span>
           </template>
@@ -91,17 +92,20 @@
         <!-- 数据质量情况 -->
         <el-table-column label="数据质量情况" width="150">
           <template slot-scope="scope">
-            <span style="margin-left: 10px"><el-button type="text" @click="toassessment(scope.row.TM_TABLENAME)">5个问题
-              <!-- {{ scope.row.TM_DBNAME }} -->
-              </el-button></span>
+            <span style="margin-left: 10px">
+              <el-button type="text" v-if="scope.row['TM_ISDEFINED']==='0'"></el-button>
+              <el-button type="text" v-else-if="scope.row['TM_ISDEFINED']==='1'" @click="toassessment(scope.row.TM_TABLENAME)">{{scope.row.TM_DATAQUALITY}}个问题</el-button>
+            </span>
           </template>
         </el-table-column>
         <!-- 数据治理情况 -->
         <el-table-column label="数据治理情况" width="150">
           <template slot-scope="scope">
-            <span style="margin-left: 10px"><el-button type="text" @click="toassessment(scope.row.TM_TABLENAME)">30%已改进
-              <!-- {{ scope.row.TM_DBNAME }} -->
-              </el-button></span>
+            <span style="margin-left: 10px">
+              <el-button type="text" v-if="scope.row['TM_ISDEFINED']==='0'"></el-button>
+              <el-button type="text" v-else-if="scope.row['TM_ISDEFINED']==='1'&scope.row['TM_DATAQUALITY']==='0'">无需改进</el-button>
+              <el-button type="text" v-else @click="toassessment(scope.row.TM_TABLENAME)">{{scope.row.TM_MODIFYCOMPLETIONRATE*100}}%已改进</el-button>
+            </span>
           </template>
         </el-table-column>
       </el-table>
@@ -122,7 +126,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+// import axios from 'axios'
+import request from '../request'
 import dayjs from 'dayjs'
 export default {
 
@@ -157,8 +162,9 @@ export default {
     },
     // 分页
     fenye (val) {
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/assets?page=' + val + '&size=20')
+      request({
+        url: '/assets?page=' + val + '&size=20'
+      })
         .then(res => {
           console.log('zheshi assets')
           console.log(res)
@@ -176,8 +182,10 @@ export default {
         3: 'OD_SRMS',
         4: 'OD_YLB'
       }
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/assets?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%')
+
+      request({
+        url: '/assets?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%'
+      })
         .then(res => {
           console.log('zheshi sousuo')
           console.log(this.radio)
@@ -215,6 +223,12 @@ export default {
         }
       })
     },
+    // 如果波动检测任务未创建，点击后的提示
+    handle1 () {
+      this.$alert('未创建波动检测任务', '提示', {
+        confirmButtonText: '确定'
+      })
+    },
     // 根据表名查找任务列表
     tojob (tablename) {
       this.$router.push({
@@ -237,8 +251,9 @@ export default {
     search () {
       this.searchname = this.input1
       console.log(this.searchname)
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/search?tablename=' + this.searchname)
+      request({
+        url: '/search?tablename=' + this.searchname
+      })
         .then(res => {
           console.log('zheshi sousuo')
           console.log(res)

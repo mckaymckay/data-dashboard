@@ -72,7 +72,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+// import axios from 'axios'
+import request from '../request'
 export default {
   data () {
     return {
@@ -80,8 +81,6 @@ export default {
       missionname: '',
       seven_chart: null,
       month_chart: null,
-      dx: '', // x轴
-      dy: '', // 数值
       getnumber: '',
       tableData: [],
       seven_option: {
@@ -120,8 +119,6 @@ export default {
         },
         xAxis: {
           type: 'category',
-          // boundaryGap: false,
-          // data: ['10-11', '11-26', '11-27', '11-28', '11-29', '11-30', '12-01', '12-02', '11-26', '10-11']
           data: {},
           axisLine: {
             lineStyle: {
@@ -174,24 +171,6 @@ export default {
           {
             name: '平行于y轴的趋势线',
             type: 'line'
-            // markLine: {
-            //   name: 'aa',
-            //   data: [
-            //     {
-            //       name: '50%标准线',
-            //       yAxis: 50,
-            //       lineStyle: { // 设置折线色颜色
-            //         color: '#f8e124 '
-            //       }
-            //     }
-            //   ],
-            //   // symbol: ['arrow', 'none'], // 将箭头向左  默认值是向右的
-            //   label: {
-            //     show: true,
-            //     position: 'middle', // markline描述位于中间   right，left，middle
-            //     formatter: '{b}' // 显示name中的描述
-            //   }
-            // }
           }
         ]
       }
@@ -207,9 +186,6 @@ export default {
       this.$router.push({ path: '/Accuracy/' })
     },
     get_data () {
-      console.log(this.dx)
-      this.dx = ['10-11', '11-26', '11-27', '11-28', '11-29', '11-30', '12-01', '12-02', '11-26', '10-11']
-      this.dy = [0, 80, 90, 30, 40, 80, 60, 70, 80, 100]
       console.log(this.$route.params)
       this.missionname = this.$route.params.missionname
       var tableid = this.$route.params.tableid
@@ -218,8 +194,9 @@ export default {
       const ddx = []
       // 获取y轴数值
       const ddy = []
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/accuracyResult?tableid=' + tableid)
+      request({
+        url: '/accuracyResult?tableid=' + tableid
+      })
         .then(res => {
           console.log(res)
           this.getnumber = res.data.data

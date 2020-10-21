@@ -58,7 +58,7 @@
               <el-input
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4}"
-                placeholder="请输入"
+                placeholder="例:set rymc='区内部评比一等奖' where ryjb='1' and rylc='3'"
                 v-model="ruleForm.fillkey"
                 style="width: 300px"
                 clearable>
@@ -74,7 +74,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+// import axios from 'axios'
+import request from '../request'
 export default {
   data () {
     return {
@@ -118,7 +119,6 @@ export default {
     },
     submitForm (formName) {
       this.modifyvalue = this.ruleForm.fillkey
-      console.log(this.modifyvalue.length)
       // 去除字符串的头尾空格
       if (!this.modifyvalue.trim()) {
         this.$alert('请输入填充值', '提示', {
@@ -126,32 +126,50 @@ export default {
         })
       }
       console.log(this.radio)
-      // if (this.radio === 2) {
-      //   this.ruleForm.fillkey = ''
-      // } else {
-      //   this.ruleForm.fillkey = '系统自动填充' + this.$route.params.fieldname
-      // }
-      axios
-        .put('http://127.0.0.1:5000/api/v1.0/quality?tableid=' + this.tableid + '&fieldname=' + this.$route.params.fieldname + '&modifyvalue=' + this.modifyvalue)
-        .then(res => {
-          if (res.data.code === '200') {
+      // 如果选择sql输入
+      if (this.radio === 2) {
+        request({
+          url: '/quality-none?tableid=' + this.tableid + '&fieldname=' + this.$route.params.fieldname + '&sql=' + this.modifyvalue,
+          method: 'put'
+        })
+          .then(res => {
             console.log(res)
-            this.$alert('修改成功', '提示', {
-              confirmButtonText: '确定',
-              callback: action => {
-                this.$router.push({ path: '/assessment/' })
-              }
-            })
-          }
-        }
-        )
-    },
-    resetForm (formName) {
-      this.$refs[formName].resetFields()
+            if (res.data.code === '200') {
+              console.log(res)
+              this.$alert('修改成功', '提示', {
+                confirmButtonText: '确定',
+                callback: action => {
+                  // this.$router.push({ path: '/assessment/' })
+                }
+              })
+            } else {
+              console.log(res.data.message)
+              this.$alert(res.data.message, '提示', {
+                confirmButtonText: '确定'
+              })
+            }
+          })
+      } else {
+        // 如果选择系统自动填充
+        request({
+          url: '/quality?tableid=' + this.tableid + '&fieldname=' + this.$route.params.fieldname + '&modifyvalue=' + this.modifyvalue,
+          method: 'put'
+        })
+          .then(res => {
+            if (res.data.code === '200') {
+              console.log(res)
+              this.$alert('修改成功', '提示', {
+                confirmButtonText: '确定',
+                callback: action => {
+                  // this.$router.push({ path: '/assessment/' })
+                }
+              })
+            }
+          })
+      }
     },
     back () {
       console.log('back')
-      // console.log(this.ruleForm.fillkey)
       this.$router.back()
     }
   }

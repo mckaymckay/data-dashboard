@@ -50,7 +50,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+// import axios from 'axios'
+import request from '../request'
 import dayjs from 'dayjs'
 export default {
   data () {
@@ -64,8 +65,9 @@ export default {
     console.log(this.$route.params)
     var jobId = this.$route.params.jobId
     console.log(this.$route.params.jobId)
-    axios
-      .get('http://localhost:38080/api/v1/jobs/instances?jobId=' + jobId + '&page=' + 0 + '&size=' + 200)
+    request({
+      url: '/jobs/instances?jobId=' + jobId + '&page=' + 0 + '&size=' + 200
+    })
       .then(res => {
         console.log('zheshi successjob')
         console.log(res.data)

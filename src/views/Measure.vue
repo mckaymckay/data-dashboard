@@ -57,7 +57,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+// import axios from 'axios'
+import request from '../request'
 // import dayjs from 'dayjs'
 export default {
   data () {
@@ -78,9 +79,9 @@ export default {
     console.log(this.$route.params)
     // var tableid = this.$route.params.tableid
     this.table_name = this.$route.params.tablename
-    console.log(this.$route.params.tableid)
-    axios
-      .get('http://47.94.199.242:5000/api/v1.0/assets/' + this.$route.params.tableid + '?page=1&size=50')
+    request({
+      url: '/assets/' + this.$route.params.tableid + '?page=1&size=50'
+    })
       .then((res) => {
         console.log('zheshi measure')
         console.log(res)
@@ -90,8 +91,9 @@ export default {
           // '无需检测'
         })
       })
-    axios
-      .get('http://47.94.199.242:5000/api/v1.0/measurelist')
+    request({
+      url: '/measurelist'
+    })
       .then((res) => {
         console.log('zheshi measurelist')
         // console.log(res.data.data)
@@ -116,9 +118,6 @@ export default {
       }
     },
     submit () {
-      // console.log(this.tableData)
-      // console.log(this.measures)
-      // console.log(this.form.missionname)
       const result = {
         JS_JOBNAME: this.form.missionname,
         JS_TABLENAME: this.$route.params.tablename,
@@ -130,8 +129,8 @@ export default {
         }).filter(v => v.MS_MEASURE !== '无需检测')
       }
       if (result.data.length !== 0) {
-        axios({
-          url: 'http://127.0.0.1:5000/api/v1.0/measure',
+        request({
+          url: '/measure',
           method: 'put',
           headers: { 'Content-Type': 'application/json' },
           data: result
@@ -143,7 +142,8 @@ export default {
               this.$alert('提交成功', '结果', {
                 confirmButtonText: '确定'
               })
-              this.$router.push({ path: '/measure1/' })
+              // 跳转到规则定义页面
+              // this.$router.push({ path: '/measure1/' })
             } else {
               console.log(res.data.message)
               this.$alert(res.data.message, '结果', {

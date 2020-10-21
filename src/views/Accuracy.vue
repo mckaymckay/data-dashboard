@@ -30,6 +30,7 @@
             <el-radio :label="2">教师档案库</el-radio>
             <el-radio :label="3">教师课题库</el-radio>
             <el-radio :label="4">云录播</el-radio>
+            <el-radio :label="5">数据分析</el-radio>>
           </el-radio-group>
         </template>
       </div>
@@ -53,7 +54,7 @@
         <el-table-column label="度量名称" min-width="32%">
           <template slot-scope="scope">
             <span style="margin-left: 10px">
-              <el-button type="text"  @click="checkjob">
+              <el-button type="text">
                 {{ scope.row.FM_MISSIONNAME }}
                 </el-button></span>
           </template>
@@ -89,12 +90,11 @@
         <el-table-column label="操作" min-width="18%">
           <template slot-scope="scope">
             <el-button-group>
-              <!-- <el-button type="primary" icon="el-icon-view" @click="checkjob"></el-button> -->
               <!-- 删除任务 -->
               <el-button size="small" type="primary" icon="el-icon-delete" @click="deletejob(scope.row.FM_ID)"></el-button>
               <!-- 添加即时任务 -->
               <el-tooltip class="item" effect="dark" content="添加即时任务" placement="top-start">
-                <el-button size="small" v-if="scope.row['FM_STATUS']==='等待下次执行'" type="primary" icon="el-icon-video-play"></el-button>
+                <el-button size="small" v-if="scope.row['FM_STATUS']==='等待下次执行'" type="primary" @click="imme(scope.row.FM_ID)" icon="el-icon-video-play"></el-button>
                 <el-button size="small" v-else-if="scope.row['FM_STATUS']==='暂停'" type="primary" @click="imme(scope.row.FM_ID)" icon="el-icon-video-play"></el-button>
                 <el-button size="small" v-else-if="scope.row['FM_STATUS']==='已完成'" type="primary" @click="imme(scope.row.FM_ID)" icon="el-icon-circle-check"></el-button>
               </el-tooltip>
@@ -127,8 +127,10 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
-import day from 'dayjs'
+// import axios from 'axios'
+// import day from 'dayjs'
+import request from '../request'
+
 export default {
 
   data () {
@@ -140,18 +142,7 @@ export default {
       page: 1,
       total: 0,
       limit: 10,
-      radio: 1,
-      options: [{
-        value: 'HTML',
-        label: 'HTML'
-      }, {
-        value: 'CSS',
-        label: 'CSS'
-      }, {
-        value: 'JavaScript',
-        label: 'JavaScript'
-      }],
-      value: []
+      radio: 1
     }
   },
 
@@ -178,11 +169,12 @@ export default {
     },
     // 分页
     fenye (val) {
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/accuracy?page=' + val + '&size=20')
+      request({
+        url: '/accuracy?page=' + val + '&size=20'
+      })
         .then(res => {
-          console.log('zheshi accuracy')
-          console.log(res)
+          // console.log('zheshi accuracy')
+          // console.log(res)
           this.tableData = res.data.data
           this.total = res.data.pages * this.limit
         })
@@ -194,12 +186,12 @@ export default {
         3: 'OD_SRMS',
         4: 'OD_YLB'
       }
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/accuracy?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%')
+      request({
+        url: '/accuracy?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%'
+      })
         .then(res => {
-          console.log('zheshi sousuo')
-          console.log(this.radio)
-          console.log(res)
+          // console.log(this.radio)
+          // console.log(res)
           this.tableData = res.data.data
           this.total = res.data.pages * this.limit
         })
@@ -213,8 +205,9 @@ export default {
       }
     },
     search () {
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/searchaccuracy?tablename=' + this.input1)
+      this.request({
+        url: '/searchaccuracy?tablename=' + this.input1
+      })
         .then(res => {
           console.log('zheshi sousuo')
           console.log(res)
@@ -230,20 +223,14 @@ export default {
       console.log(tableid)
       this.$router.push({ path: '/openjob/' + tableid })
     },
-    // 查看任务
-    checkjob () {
-      console.log('checkjob')
-      // console.log(day('2020-1-30 13:12:42').add(1, 'month').format('YYYY-MM-DD HH:mm:ss'))
-      // console.log(day('2020-8-3 13:12:42').add(1, 'month').format('YYYY-MM-DD HH:mm:ss'))
-      var dd = new Date()
-      console.log(dd)
-      console.log(day(dd).add(5, 'minute').format('YYYY-MM-DD HH:mm:ss'))
-      console.log(day(dd).format('YYYY-MM-DD HH:mm:ss'))
-    },
+    // 即时任务
     imme (tableid) {
+      console.log(111)
       console.log(tableid)
-      axios
-        .post('http://127.0.0.1:5000/api/v1.0/accuracymissionImmediately?tableid=' + tableid)
+      request({
+        url: '/accuracymissionImmediately?tableid=' + tableid,
+        method: 'post'
+      })
         .then(res => {
           console.log(res)
           if (res.data.code === '200') {
@@ -268,8 +255,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        axios
-          .delete('http://47.94.199.242:5000/api/v1.0/accuracy?tableid=' + tableid)
+        request({
+          url: '/accuracy?tableid=' + tableid,
+          method: 'delete'
+        })
           .then(res => {
             console.log(res)
             console.log(res.data.code)
@@ -301,8 +290,9 @@ export default {
     // 从数据实体页而来
     fromassets () {
       this.table_name = this.$route.params.tablename
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/searchaccuracy?tablename=' + this.table_name)
+      request({
+        url: '/searchaccuracy?tablename=' + this.table_name
+      })
         .then(res => {
           console.log(res)
           this.tableData = res.data.data

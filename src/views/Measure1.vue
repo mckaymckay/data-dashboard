@@ -19,6 +19,7 @@
             <el-radio :label="2">教师档案库</el-radio>
             <el-radio :label="3">教师课题库</el-radio>
             <el-radio :label="4">云录播</el-radio>
+            <el-radio :label="5">数据分析</el-radio>>
           </el-radio-group>
         </template>
       </div>
@@ -83,7 +84,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+// import axios from 'axios'
+import request from '../request'
 import dayjs from 'dayjs'
 // import ECharts from 'vue-echarts'
 export default {
@@ -101,6 +103,7 @@ export default {
       radio: 1
     }
   },
+
   // 开始执行分页函数
   mounted () {
     this.handleCurrentChange(1)
@@ -119,8 +122,9 @@ export default {
     },
     // 分页
     fenye (val) {
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/assets?page=' + val + '&size=20')
+      request({
+        url: '/assets?page=' + val + '&size=20'
+      })
         .then(res => {
           console.log('zheshi assets')
           console.log(res)
@@ -135,8 +139,9 @@ export default {
         3: 'OD_SRMS',
         4: 'OD_YLB'
       }
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/assets?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%')
+      request({
+        url: '/assets?page=' + val + '&size=20&types=' + typeEnum[this.radio] + '_%'
+      })
         .then(res => {
           console.log('zheshi sousuo')
           console.log(this.radio)
@@ -169,8 +174,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        axios
-          .delete('http://47.94.199.242:5000/api/v1.0/measure/' + tableid)
+        request({
+          url: '/measure/' + tableid,
+          method: 'delete'
+        })
           .then(res => {
             console.log(res.data)
             if (res.data.code === '200') {
@@ -210,8 +217,9 @@ export default {
     search () {
       this.searchname = this.input1
       console.log(this.searchname)
-      axios
-        .get('http://47.94.199.242:5000/api/v1.0/search?tablename=' + this.searchname)
+      request({
+        url: '/search?tablename=' + this.searchname
+      })
         .then(res => {
           console.log('zheshi sousuo')
           console.log(res)
